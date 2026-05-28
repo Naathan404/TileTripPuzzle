@@ -101,11 +101,11 @@ public class BarManager : MonoBehaviour
     private IEnumerator RemoveMatchedTiles(int startingRemoveIndex, int idToRemove)
     {
         _tileList[startingRemoveIndex].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
-            yield return new WaitForSeconds(_disappearDuration);
+            yield return new WaitForSeconds(_disappearDuration / 2);
         _tileList[startingRemoveIndex + 1].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
-            yield return new WaitForSeconds(_disappearDuration);
+            yield return new WaitForSeconds(_disappearDuration / 2);
         _tileList[startingRemoveIndex + 2].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
-            yield return new WaitForSeconds(_disappearDuration);
+            yield return new WaitForSeconds(_disappearDuration / 2);
 
         for(int i = _tileList.Count - 1; i >= 0; i--)
         {

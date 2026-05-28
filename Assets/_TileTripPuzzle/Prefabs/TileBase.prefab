@@ -47,10 +47,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88676946abe11a94db2c0301180bb509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tile
-  TileID: 0
-  _x: 36
-  _y: 63
-  _isBlocked: 0
+  Data:
+    X: 0
+    Y: 0
+    Z: 0
+    TileID: 5
+    IsBlocked: 0
+    Width: 0
+    Height: 0
+  _imageList:
+  - {fileID: -855298285791758126, guid: d486ffd0d31c4c84685f6fa371696cb2, type: 3}
+  - {fileID: 6937817954938267909, guid: 62dcec6211a18dc4d89c9f6d2a4a2a93, type: 3}
+  - {fileID: -6470460504253458178, guid: 6a4bca3bbaf5d2448bc88b75ea544822, type: 3}
+  - {fileID: -4178046375966092550, guid: e37efd6007c7fc94ebd88305994fb449, type: 3}
+  - {fileID: 4130640169021434097, guid: ea067655cbe70f441919b0fd8aa50522, type: 3}
+  - {fileID: 3465286685962602723, guid: 595753b2e6c3a2d49a4c10600bc5a376, type: 3}
+  - {fileID: 7028616704906629411, guid: 6b0d36fcdd12a364ab175b13c9a1f306, type: 3}
+  - {fileID: 8288426215254106694, guid: b293f4ad13cbca546af6319e80e16d78, type: 3}
+  - {fileID: 4113829005332862926, guid: a0e802715bcb7a045823025e28a90d46, type: 3}
+  - {fileID: -5099292496197868168, guid: d21df86a27173b14190746f1ea1e3ffc, type: 3}
+  - {fileID: -2966200626249415253, guid: 1ebc70840b6adfb4899dfe46f7c8f997, type: 3}
+  - {fileID: -1540426309290004842, guid: acb181a0c695c424baedc498e2773edd, type: 3}
+  - {fileID: 8389134475083476877, guid: d18d3046a234eec45ad245528fc38267, type: 3}
+  - {fileID: -6270953770400647376, guid: c1585c05f6244334c99867bd45306975, type: 3}
   _imageSprite: {fileID: 1678431868193222569}
 --- !u!212 &4319145014753579324
 SpriteRenderer:
