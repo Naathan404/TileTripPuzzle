@@ -7,14 +7,14 @@ using log4net.Core;
 public class LevelEditor : EditorWindow
 {
     // Cấu hình lưới
-    private int gridSizeX = 7;
-    private int gridSizeY = 9;
+    private int gridSizeX = 14;
+    private int gridSizeY = 18;
     private int currentLayerZ = 0; 
     private int levelID = 1;
 
     private Vector2 tileSpacing = new Vector2(0.75f, 0.8f);
 
-    private float cellSize = 40f; 
+    private float cellSize = 20f; 
     private Dictionary<int, List<Vector2>> layerDataDict = new Dictionary<int, List<Vector2>>();
 
     // tạo menu Tools
@@ -60,6 +60,11 @@ public class LevelEditor : EditorWindow
         if (GUILayout.Button("+", GUILayout.Width(30))) 
             currentLayerZ++;
         
+        if(GUILayout.Button("Clear", GUILayout.Width(100)))
+        {
+            List<Vector2> currentLayerList = layerDataDict[currentLayerZ];
+            currentLayerList.Clear();
+        }
 
 
             
@@ -92,8 +97,19 @@ public class LevelEditor : EditorWindow
                 Vector2 currentPos = new Vector2(x, y);
                 
                 bool hasTile = currentLayerList.Contains(currentPos);
+                bool isFootprint = !hasTile && (
+                    currentLayerList.Contains(new Vector2(x - 1, y)) ||     // Bị đè bởi thẻ bên Trái
+                    currentLayerList.Contains(new Vector2(x, y - 1)) ||     // Bị đè bởi thẻ bên Trên
+                    currentLayerList.Contains(new Vector2(x - 1, y - 1))    // Bị đè bởi thẻ góc Trên-Trái
+                );
 
-                GUI.backgroundColor = hasTile ? Color.cyan : Color.white;
+                if (hasTile)
+                    GUI.backgroundColor = Color.cyan; 
+                else if (isFootprint)
+                    GUI.backgroundColor = new Color(0.8f, 0.95f, 0.95f, 1f); 
+                else
+                    GUI.backgroundColor = Color.white; 
+                    
                 if (GUILayout.Button("", GUILayout.Width(cellSize), GUILayout.Height(cellSize)))
                 {
                     if (hasTile)
@@ -155,7 +171,7 @@ public class LevelEditor : EditorWindow
 
             foreach (Vector2 pos in gridPositions)
             {
-                layerData.TilePositions.Add(new TilePosition(pos.x, pos.y));
+                layerData.TilePositions.Add(new TilePosition(pos.x * 0.5f, pos.y * 0.5f));
                 totalTilesCount++;
             }
 

@@ -39,6 +39,8 @@ public class BarManager : Singleton<BarManager>
         int insertIndex = FindInsertIndex(tile);
         _tileList.Insert(insertIndex, tile);
         UpdateBarDisplay();
+
+        CancelInvoke(nameof(CheckForMatches));
         Invoke("CheckForMatches", _waitTime);
     }
 
@@ -109,15 +111,11 @@ public class BarManager : Singleton<BarManager>
         _tileList[startingRemoveIndex + 2].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
             yield return new WaitForSeconds(_disappearDuration / 2);
 
-        for(int i = _tileList.Count - 1; i >= 0; i--)
+        for(int i = 0; i < 3; i++)
         {
-            if(_tileList == null) continue;
-            if(_tileList[i].TileID == idToRemove)
-            {
-                Tile tileToRemove = _tileList[i];
-                _tileList.RemoveAt(i);
-                Destroy(tileToRemove.gameObject);
-            }
+            Tile tileToRemove = _tileList[startingRemoveIndex];
+            _tileList.RemoveAt(startingRemoveIndex);
+            Destroy(tileToRemove.gameObject);
         }
 
         UpdateBarDisplay();

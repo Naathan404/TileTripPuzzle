@@ -55,6 +55,15 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
+        /// Mix _tileList bằng Fisher yates
+        for(int i = _unsignedTileDatas.Count - 1; i >= 1; i--)
+        {
+            int rnd = UnityEngine.Random.Range(0, i);
+            var temp = _unsignedTileDatas[rnd];
+            _unsignedTileDatas[rnd] = _unsignedTileDatas[i];
+            _unsignedTileDatas[i] = temp;
+        }
+        
         int mark = 0;
         for(int i = 0; i < _levelData.TotalTiles / 3; i++)
         {
@@ -64,6 +73,8 @@ public class LevelGenerator : MonoBehaviour
                 _unsignedTileDatas[mark++].TileID = randomId;
             }
         }
+
+
 
         _tileDatas = _unsignedTileDatas;
     }

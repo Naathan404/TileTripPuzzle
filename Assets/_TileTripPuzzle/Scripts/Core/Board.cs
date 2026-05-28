@@ -22,6 +22,7 @@ public class Board : MonoBehaviour
 
     public void InitBoard(List<TileData> datas, float spacingX, float spacingY)
     {
+        
         foreach (TileData data in datas)
         {
 
@@ -30,6 +31,7 @@ public class Board : MonoBehaviour
             tileScript.SetData(data);
             _tileList.Add(tileScript);
         }
+
 
         /// Center board
         float minY = Int32.MaxValue; float maxY = Int32.MinValue;
@@ -57,9 +59,7 @@ public class Board : MonoBehaviour
             Vector3 finalPos = new Vector3(posX, posY, 0);
             tile.transform.position = finalPos;
 
-            tile.GetComponent<SpriteRenderer>().sortingOrder = tile.Data.Z * 10;
             tile.name = $"Tile_{tile.Data.TileID}_Z{tile.Data.Z}";
-
             tile.SetStateBlocked(CheckTileBlocked(tile));
         }
     }
@@ -89,7 +89,7 @@ public class Board : MonoBehaviour
         Tile temp = tile;
         _tileList.Remove(tile);
 
-        Debug.Log("Board nhận được tín hiệu click 1 Tile");
+        Debug.Log("[BOARD] nhận được tín hiệu click 1 Tile");
         if(temp.Data.Z == 0) return;
 
         foreach(var t in _tileList)
@@ -98,6 +98,8 @@ public class Board : MonoBehaviour
 
             t.SetStateBlocked(CheckTileBlocked(t));
         }
+
+        Debug.Log($"[BOARD] Còn {_tileList.Count} thẻ");
     }
     #endregion
 }

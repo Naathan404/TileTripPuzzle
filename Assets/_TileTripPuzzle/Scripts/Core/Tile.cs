@@ -43,6 +43,7 @@ public class Tile : MonoBehaviour, IPointerClickHandler
     {
         Data = data;
         _imageSprite.sprite = _imageList[Data.TileID]; 
+        _spriteRenderer.sortingOrder = Data.Z * 10;
         _imageSprite.sortingOrder = data.Z * 10 + 1;
     }
 
