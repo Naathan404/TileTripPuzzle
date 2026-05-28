@@ -67,46 +67,4 @@ public class LevelGenerator : MonoBehaviour
 
         _tileDatas = _unsignedTileDatas;
     }
-
-#region Các hàm trợ giúp
-    // private int CalculateTopZ(float x, float y)
-    // {
-    //     int maxZ = -1; 
-    //     float tileWidth = 1f;
-    //     float tileHeight = 1f;
-
-    //     foreach (TileData tile in _tileDatas)
-    //     {
-    //         float distanceX = Mathf.Abs(tile.X - x);
-    //         float distanceY = Mathf.Abs(tile.Y - y);
-
-    //         if (distanceX < tileWidth && distanceY < tileHeight)
-    //         {
-    //             if (tile.Z > maxZ)
-    //             {
-    //                 maxZ = tile.Z; 
-    //             }
-    //         }
-    //     }
-    //     return maxZ + 1;
-    // }
-
-    // public bool CheckTileBlocked(TileData tileToCheck)
-    // {
-    //     /// Kiểm tra overlapping: |X_A - X_B| < Width |Y_A - Y_B| < Height
-    //     foreach(var other in _tileDatas)
-    //     {
-    //         if(other.Z > tileToCheck.Z)
-    //         {
-    //             float disX = Mathf.Abs(other.X - tileToCheck.X);
-    //             float disY = Mathf.Abs(other.Y - tileToCheck.Y);
-
-    //             if (disX < tileToCheck.Width && disY < tileToCheck.Height)
-    //                 return true;
-    //         }
-    //     }
-
-    //     return false;
-    // }
-#endregion
 }

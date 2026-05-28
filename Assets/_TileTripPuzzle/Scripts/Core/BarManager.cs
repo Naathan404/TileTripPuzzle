@@ -4,7 +4,7 @@ using DG.Tweening;
 using Unity.VisualScripting;
 using System.Collections;
 
-public class BarManager : MonoBehaviour
+public class BarManager : Singleton<BarManager>
 {
     [Header("Bar Settings")]
     [SerializeField] private int _maxBarCapacity = 7;
@@ -16,6 +16,8 @@ public class BarManager : MonoBehaviour
     [SerializeField] private float _tileMoveDuration = 0.3f;
     [SerializeField] private float _disappearDuration = 0.3f;
     [SerializeField] private float _waitTime = 0.5f;
+    
+    public bool IsFull => _tileList.Count == _maxBarCapacity;
 
     private void OnEnable()
     {

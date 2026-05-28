@@ -5,12 +5,20 @@ using UnityEngine;
 public class Board : MonoBehaviour
 {
     [Header("Board Settings")]
-    [SerializeField] private float _tileSpacing = 1f;
-    [SerializeField] private Vector2 _startTilePosition = Vector2.zero;
     [SerializeField] private List<Tile> _tileList = new List<Tile>();
     
     [Header("References")]
-    [SerializeField] private GameObject _tilePrefab; 
+    [SerializeField] private GameObject _tilePrefab;
+
+    private void OnEnable()
+    {
+        Tile.OnTileClicked += UpdateBoardVisual;
+    }
+
+    private void OnDisable()
+    {
+        Tile.OnTileClicked -= UpdateBoardVisual;
+    }
 
     public void InitBoard(List<TileData> datas, float spacingX, float spacingY)
     {
@@ -42,15 +50,54 @@ public class Board : MonoBehaviour
         Debug.Log($"X: min = {minX}, max = {maxX}");
         Debug.Log($"Y: min = {minY}, max = {maxY}");
 
-        foreach(var Tile in _tileList)
+        foreach(var tile in _tileList)
         {
-            float posX = this.transform.position.x + Tile.Data.X * spacingX;
-            float posY = this.transform.position.y - Tile.Data.Y * spacingY;
+            float posX = this.transform.position.x + tile.Data.X * spacingX;
+            float posY = this.transform.position.y - tile.Data.Y * spacingY + tile.Data.Z * 0.1f;
             Vector3 finalPos = new Vector3(posX, posY, 0);
-            Tile.transform.position = finalPos;
+            tile.transform.position = finalPos;
 
-            Tile.GetComponent<SpriteRenderer>().sortingOrder = Tile.Data.Z * 10;
-            Tile.name = $"Tile_{Tile.Data.TileID}_Z{Tile.Data.Z}";
+            tile.GetComponent<SpriteRenderer>().sortingOrder = tile.Data.Z * 10;
+            tile.name = $"Tile_{tile.Data.TileID}_Z{tile.Data.Z}";
+
+            tile.SetStateBlocked(CheckTileBlocked(tile));
         }
     }
+
+
+
+    #region Các hàm trợ giúp
+    public bool CheckTileBlocked(Tile tileToCheck)
+    {
+        /// Kiểm tra overlapping: |X_A - X_B| < Width |Y_A - Y_B| < Height
+        foreach(var other in _tileList)
+        {
+            if(other.Data.Z > tileToCheck.Data.Z)
+            {
+                float disX = Mathf.Abs(other.Data.X - tileToCheck.Data.X);
+                float disY = Mathf.Abs(other.Data.Y - tileToCheck.Data.Y);
+
+                if (disX < tileToCheck.Data.Width && disY < tileToCheck.Data.Height)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public void UpdateBoardVisual(Tile tile)
+    {
+        Tile temp = tile;
+        _tileList.Remove(tile);
+
+        Debug.Log("Board nhận được tín hiệu click 1 Tile");
+        if(temp.Data.Z == 0) return;
+
+        foreach(var t in _tileList)
+        {
+            if(t.Data.Z >= temp.Data.Z) continue;
+
+            t.SetStateBlocked(CheckTileBlocked(t));
+        }
+    }
+    #endregion
 }
