@@ -25,6 +25,8 @@ public class Tile : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         if(BarManager.Instance.IsFull) return;
+        if(BarManager.Instance.IsProcessing) return;
+        
         if(Data.IsBlocked)
         {
             Debug.Log($"Tile at position: ({Data.X}, {Data.Y}) is blocked. Click ignored.");

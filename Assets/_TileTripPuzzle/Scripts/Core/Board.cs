@@ -13,11 +13,13 @@ public class Board : MonoBehaviour
     private void OnEnable()
     {
         Tile.OnTileClicked += UpdateBoardVisual;
+        BarManager.OnThreeTilesMatched += CheckWinConditions;
     }
 
     private void OnDisable()
     {
         Tile.OnTileClicked -= UpdateBoardVisual;
+        BarManager.OnThreeTilesMatched += CheckWinConditions;
     }
 
     public void InitBoard(List<TileData> datas, float spacingX, float spacingY)
@@ -90,16 +92,29 @@ public class Board : MonoBehaviour
         _tileList.Remove(tile);
 
         Debug.Log("[BOARD] nhận được tín hiệu click 1 Tile");
-        if(temp.Data.Z == 0) return;
 
-        foreach(var t in _tileList)
+        if(temp.Data.Z > 0)
         {
-            if(t.Data.Z >= temp.Data.Z) continue;
+            foreach(var t in _tileList)
+            {
+                if(t.Data.Z >= temp.Data.Z) continue;
 
-            t.SetStateBlocked(CheckTileBlocked(t));
+                t.SetStateBlocked(CheckTileBlocked(t));
+            }
         }
+    }
 
+    private void CheckWinConditions()
+    {
         Debug.Log($"[BOARD] Còn {_tileList.Count} thẻ");
+
+        if(_tileList.Count == 0 && BarManager.Instance.IsEmpty)
+        {
+            Debug.Log("[BOARD] WIN GAMEEEEEEEEEEEEEE");
+            //return true;
+            return;
+        }
+        //return false;
     }
     #endregion
 }

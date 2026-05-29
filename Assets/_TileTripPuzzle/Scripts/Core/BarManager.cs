@@ -3,6 +3,7 @@ using UnityEngine;
 using DG.Tweening;
 using Unity.VisualScripting;
 using System.Collections;
+using System;
 
 public class BarManager : Singleton<BarManager>
 {
@@ -18,6 +19,11 @@ public class BarManager : Singleton<BarManager>
     [SerializeField] private float _waitTime = 0.5f;
     
     public bool IsFull => _tileList.Count == _maxBarCapacity;
+    public bool IsEmpty => _tileList.Count == 0;
+    private bool _isProcessing = false;
+    public bool IsProcessing => _isProcessing;
+
+    public static event Action OnThreeTilesMatched;
 
     private void OnEnable()
     {
@@ -30,6 +36,7 @@ public class BarManager : Singleton<BarManager>
 
     public async void AddTileToBar(Tile tile)
     {
+        if (_isProcessing) return;
         if (_tileList.Count >= _maxBarCapacity)
         {
             Debug.Log("Bar is at maximum capacity. Cannot add more tiles.");
@@ -44,15 +51,15 @@ public class BarManager : Singleton<BarManager>
         Invoke("CheckForMatches", _waitTime);
     }
 
+
     private int FindInsertIndex(Tile tile)
     {
-        int result = _tileList.Count; 
+        int result = _tileList.Count;
         for(int i = 0; i < _tileList.Count; i++)
         {
             if (tile.TileID == _tileList[i].TileID)
             {
-                result = i;
-                break;
+                result = i + 1;
             }
         }
         return result;
@@ -65,10 +72,12 @@ public class BarManager : Singleton<BarManager>
     {
         for(int i = 0; i < _tileList.Count; i++)
         {
-            if(_tileList == null) continue;
+            if(_tileList[i] == null) continue;
             Tile currentTile = _tileList[i];
             Vector3 targetPosition = transforms[i].position;
             
+            currentTile.transform.DOKill();
+            currentTile.transform.DOScale(1f, _tileMoveDuration); 
             currentTile.transform.DOMove(targetPosition, _tileMoveDuration).SetEase(Ease.OutQuad);
         }
     }
@@ -104,6 +113,8 @@ public class BarManager : Singleton<BarManager>
 
     private IEnumerator RemoveMatchedTiles(int startingRemoveIndex, int idToRemove)
     {
+        _isProcessing = true;
+
         _tileList[startingRemoveIndex].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
             yield return new WaitForSeconds(_disappearDuration / 2);
         _tileList[startingRemoveIndex + 1].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
@@ -118,7 +129,11 @@ public class BarManager : Singleton<BarManager>
             Destroy(tileToRemove.gameObject);
         }
 
+        _isProcessing = false;
+
+        OnThreeTilesMatched?.Invoke();
         UpdateBarDisplay();
+        CheckForMatches();
     }
 
 }
