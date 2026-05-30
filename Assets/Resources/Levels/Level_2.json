@@ -3,7 +3,7 @@
     "LevelName": "Level_2",
     "TotalTiles": 66,
     "SpacingX": 0.75,
-    "SpacingY": 0.800000011920929,
+    "SpacingY": 0.75,
     "Layers": [
         {
             "ZIndex": 0,

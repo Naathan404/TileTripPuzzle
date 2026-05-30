@@ -6,6 +6,7 @@ public class Board : MonoBehaviour
 {
     [Header("Board Settings")]
     [SerializeField] private List<Tile> _tileList = new List<Tile>();
+    [SerializeField] private float _stackOffset = 0.05f;
     
     [Header("References")]
     [SerializeField] private GameObject _tilePrefab;
@@ -57,7 +58,7 @@ public class Board : MonoBehaviour
         foreach(var tile in _tileList)
         {
             float posX = this.transform.position.x + tile.Data.X * spacingX;
-            float posY = this.transform.position.y - tile.Data.Y * spacingY + tile.Data.Z * 0.1f;
+            float posY = this.transform.position.y - tile.Data.Y * spacingY + tile.Data.Z * _stackOffset;
             Vector3 finalPos = new Vector3(posX, posY, 0);
             tile.transform.position = finalPos;
 

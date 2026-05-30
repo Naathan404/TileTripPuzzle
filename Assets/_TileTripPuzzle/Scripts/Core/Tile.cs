@@ -1,3 +1,5 @@
+using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -6,6 +8,7 @@ public class Tile : MonoBehaviour, IPointerClickHandler
     [Header("Tile Settings")]
     public TileData Data;
     public int TileID => Data.TileID;
+    [SerializeField] private float _fadeInDuration = 0.25f;
     [SerializeField] private Sprite[] _imageList;
     [Header("Tile Components")]
     [SerializeField] private SpriteRenderer _imageSprite;
@@ -45,8 +48,8 @@ public class Tile : MonoBehaviour, IPointerClickHandler
     {
         Data = data;
         _imageSprite.sprite = _imageList[Data.TileID]; 
-        _spriteRenderer.sortingOrder = Data.Z * 10;
-        _imageSprite.sortingOrder = data.Z * 10 + 1;
+        _spriteRenderer.sortingOrder = (Data.Z * 10) + (int)Data.Y;
+        _imageSprite.sortingOrder = (Data.Z * 10) + 9;
     }
 
     public void SetStateBlocked(bool wasBlocked)
@@ -59,9 +62,10 @@ public class Tile : MonoBehaviour, IPointerClickHandler
         }
         else
         {
-            _imageSprite.color = Color.white;
-            _spriteRenderer.color = Color.white;
             _collider.enabled = true;
+
+            _imageSprite.DOColor(Color.white, _fadeInDuration);
+            _spriteRenderer.DOColor(Color.white, _fadeInDuration);
         }
         Data.IsBlocked = wasBlocked;
     }
