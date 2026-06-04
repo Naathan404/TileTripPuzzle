@@ -18,6 +18,20 @@ public class TileData
         TileID = id;
         IsBlocked = false;
     }
+
+    /// <summary>
+    ///  Tạo ra một bản sao data của TileData này
+    /// </summary>
+    /// <returns></returns>
+    public TileData Clone()
+    {
+        return new TileData(X, Y, Z, TileID) 
+        { 
+            IsBlocked = this.IsBlocked,
+            Width = this.Width,
+            Height = this.Height
+        };
+    }
 }
 
 

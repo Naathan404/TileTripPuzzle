@@ -1,10 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
-using UnityEditor.VersionControl;
-using System.Linq;
-using System.Data.Common;
-using Unity.VisualScripting;
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -25,10 +20,11 @@ public class LevelGenerator : MonoBehaviour
     {
     }
 
+
+
     private void Start()
     {
         LoadLevelData();
-
         StartLevel();
     }
 
@@ -70,7 +66,7 @@ public class LevelGenerator : MonoBehaviour
         /// Mix _tileList bằng Fisher yates
         for(int i = _unsignedTileDatas.Count - 1; i >= 1; i--)
         {
-            int rnd = UnityEngine.Random.Range(0, i);
+            int rnd = UnityEngine.Random.Range(0, i + 1);
             var temp = _unsignedTileDatas[rnd];
             _unsignedTileDatas[rnd] = _unsignedTileDatas[i];
             _unsignedTileDatas[i] = temp;
