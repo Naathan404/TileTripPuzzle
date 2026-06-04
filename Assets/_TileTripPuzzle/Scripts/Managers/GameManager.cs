@@ -16,7 +16,10 @@ public class GameManager : Singleton<GameManager>
     public static event Action OnLevelWin;
     public static event Action OnLevelLose;
 
+    [Header("References")]
+    [SerializeField] private LevelManager _levelManager;
 
+    #region Object Life cycle
     private void OnEnable()
     {
         BarManager.OnBarFull += HandleLoseLevel;
@@ -29,16 +32,26 @@ public class GameManager : Singleton<GameManager>
         Board.OnBoardClear -= HandleWinLevel;
     }
 
+    #endregion
+
+    /// <summary>
+    /// Xử lý thắng level
+    /// </summary>
     private void HandleWinLevel()
     {
+        Debug.Log($"[GAME MANAGER] bar tile count: {BarManager.Instance.TileCount}");
         if (CurrentGameState != GameState.Playing) return;
         if(!BarManager.Instance.IsEmpty) return;
 
         Debug.Log("[GAME MANAGER] Win level");
         CurrentGameState = GameState.Win;
+        NextLevel();
         OnLevelWin?.Invoke();
     }
 
+    /// <summary>
+    /// Xử lý thua level
+    /// </summary>
     private void HandleLoseLevel()
     {
         if (CurrentGameState != GameState.Playing) return;
@@ -48,22 +61,29 @@ public class GameManager : Singleton<GameManager>
         OnLevelLose?.Invoke();
     }
 
+    /// <summary>
+    /// Gọi để load màn tiếp theo
+    /// </summary>
     public void NextLevel()
     {
+        Debug.Log("[GAME MANAGER] Next level");
         CurrentGameState = GameState.Playing;
         Reset();
-
-        Debug.Log("[GAME MANAGER] Next level");
+        _levelManager.LoadNextLevel();
     }
 
     public void ReplayLevel()
     {
+        Debug.Log("[GAME MANAGER] Replay level");
         CurrentGameState = GameState.Playing;
         Reset();
+        _levelManager.ReplayLevel();
 
-        Debug.Log("[GAME MANAGER] Replay level");
     }
 
+    /// <summary>
+    /// Set trạng thái level lại từ đầu
+    /// </summary>
     public void Reset()
     {
         BarManager.Instance.ClearBar();

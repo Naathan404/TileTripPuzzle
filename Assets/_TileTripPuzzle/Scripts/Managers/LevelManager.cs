@@ -8,7 +8,6 @@ public class LevelManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Board _board;
-    [SerializeField] private LevelGenerator _levelGenerator;
 
     [Header("Settings")]
     [SerializeField] private int _totalLevels = 10;
@@ -24,11 +23,17 @@ public class LevelManager : MonoBehaviour
         LoadCurrentLevel();
     }
 
+    /// <summary>
+    /// Load dữ liệu level hiện tại
+    /// </summary>
     public void LoadCurrentLevel()
     {
         LoadLevel(_saveData.CurrentLevel);
     }
 
+    /// <summary>
+    /// Load dữ liệu level tiếp theo
+    /// </summary>
     public void LoadNextLevel()
     {
         int nextLevelId = _saveData.CurrentLevel + 1;
@@ -44,6 +49,9 @@ public class LevelManager : MonoBehaviour
         LoadLevel(nextLevelId);
     }
 
+    /// <summary>
+    /// Load lại level hiện tại
+    /// </summary>
     public void ReplayLevel()
     {
         LoadLevel(_saveData.CurrentLevel);
@@ -180,6 +188,12 @@ public class LevelManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Kiểm tra tile có bị khóa không
+    /// </summary>
+    /// <param name="tileToCheck"></param>
+    /// <param name="tileList"></param>
+    /// <returns></returns>
     private bool IsTileBlocked(TileData tileToCheck, List<TileData> tileList)
     {
         foreach (var other in tileList)

@@ -22,8 +22,10 @@ public class BarManager : Singleton<BarManager>
     public bool IsEmpty => _tileList.Count == 0;
     private bool _isProcessing = false;
     public bool IsProcessing => _isProcessing;
+    public int TileCount => _tileList.Count;
 
     public static event System.Action OnBarFull;
+    public static event Action OnTileRemoved;
 
     private void OnEnable()
     {
@@ -86,13 +88,13 @@ public class BarManager : Singleton<BarManager>
     {
         StopAllCoroutines();
         CancelInvoke(nameof(CheckForMatches));
+        _tileList.Clear();
+        _isProcessing = false;
  
         foreach (var tile in _tileList)
         {
             if (tile != null) Destroy(tile.gameObject);
         }
-        _tileList.Clear();
-        _isProcessing = false;
     }
 
     private void CheckForMatches()
@@ -146,6 +148,7 @@ public class BarManager : Singleton<BarManager>
         _isProcessing = false;
 
         CheckForMatches();
+        OnTileRemoved?.Invoke();
     }
 
 }

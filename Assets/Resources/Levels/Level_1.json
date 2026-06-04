@@ -6,7 +6,8 @@
     "SpacingY": 0.800000011920929,
     "AvailableTileIDs": [
         1,
-        2
+        2,
+        3
     ],
     "Layers": [
         {

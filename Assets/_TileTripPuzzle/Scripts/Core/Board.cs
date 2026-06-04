@@ -16,11 +16,13 @@ public class Board : MonoBehaviour
     private void OnEnable()
     {
         Tile.OnTileClicked += UpdateBoardVisual;
+        BarManager.OnTileRemoved += CheckWinConditions;
     }
 
     private void OnDisable()
     {
         Tile.OnTileClicked -= UpdateBoardVisual;
+        BarManager.OnTileRemoved -= CheckWinConditions;
     }
 
     public void InitBoard(List<TileData> datas, float spacingX, float spacingY)
