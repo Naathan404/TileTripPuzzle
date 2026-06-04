@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -40,6 +41,8 @@ public class Tile : MonoBehaviour, IPointerClickHandler
         _collider.enabled = false;
         Data.IsBlocked = true;
 
+        _spriteRenderer.sortingOrder = 998;
+        _imageSprite.sortingOrder = 999;
         OnTileClicked?.Invoke(this);
 
     }

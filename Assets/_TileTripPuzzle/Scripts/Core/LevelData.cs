@@ -8,6 +8,7 @@ public class LevelData
     public int TotalTiles; 
     public float SpacingX = 0.5f;
     public float SpacingY = 0.5f;
+    public List<int> AvailableTileIDs = new List<int>();
     
     public List<LayerData> Layers = new List<LayerData>();
 }

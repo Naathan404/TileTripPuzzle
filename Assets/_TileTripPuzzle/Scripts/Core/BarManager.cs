@@ -23,7 +23,7 @@ public class BarManager : Singleton<BarManager>
     private bool _isProcessing = false;
     public bool IsProcessing => _isProcessing;
 
-    public static event Action OnThreeTilesMatched;
+    public static event System.Action OnBarFull;
 
     private void OnEnable()
     {
@@ -82,6 +82,19 @@ public class BarManager : Singleton<BarManager>
         }
     }
 
+    public void ClearBar()
+    {
+        StopAllCoroutines();
+        CancelInvoke(nameof(CheckForMatches));
+ 
+        foreach (var tile in _tileList)
+        {
+            if (tile != null) Destroy(tile.gameObject);
+        }
+        _tileList.Clear();
+        _isProcessing = false;
+    }
+
     private void CheckForMatches()
     {
         int tileIDToRemove = -1;
@@ -100,9 +113,10 @@ public class BarManager : Singleton<BarManager>
 
         if(tileIDToRemove == -1)
         {
-            if(_tileList.Count > _maxBarCapacity)
+            if(_tileList.Count >= _maxBarCapacity)
             {
-                Debug.Log("Game Over!");
+                Debug.Log("[BAR] Bar is full!");
+                OnBarFull?.Invoke();
                 return;
             }
             return;
@@ -116,11 +130,11 @@ public class BarManager : Singleton<BarManager>
         _isProcessing = true;
 
         _tileList[startingRemoveIndex].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
-            yield return new WaitForSeconds(_disappearDuration / 2);
+            yield return new WaitForSeconds(_disappearDuration);
         _tileList[startingRemoveIndex + 1].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
-            yield return new WaitForSeconds(_disappearDuration / 2);
+            yield return new WaitForSeconds(_disappearDuration);
         _tileList[startingRemoveIndex + 2].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
-            yield return new WaitForSeconds(_disappearDuration / 2);
+            yield return new WaitForSeconds(_disappearDuration);
 
         for(int i = 0; i < 3; i++)
         {
@@ -128,11 +142,9 @@ public class BarManager : Singleton<BarManager>
             _tileList.RemoveAt(startingRemoveIndex);
             Destroy(tileToRemove.gameObject);
         }
-
+        UpdateBarDisplay();
         _isProcessing = false;
 
-        OnThreeTilesMatched?.Invoke();
-        UpdateBarDisplay();
         CheckForMatches();
     }
 

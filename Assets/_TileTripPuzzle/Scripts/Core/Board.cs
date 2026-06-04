@@ -11,21 +11,28 @@ public class Board : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject _tilePrefab;
 
+    public static event Action OnBoardClear;
+
     private void OnEnable()
     {
         Tile.OnTileClicked += UpdateBoardVisual;
-        BarManager.OnThreeTilesMatched += CheckWinConditions;
     }
 
     private void OnDisable()
     {
         Tile.OnTileClicked -= UpdateBoardVisual;
-        BarManager.OnThreeTilesMatched += CheckWinConditions;
     }
 
     public void InitBoard(List<TileData> datas, float spacingX, float spacingY)
     {
-        
+        transform.position = Vector2.zero;
+
+        foreach (var tile in _tileList)
+        {
+            if (tile != null) Destroy(tile.gameObject);
+        }
+        _tileList.Clear();
+
         foreach (TileData data in datas)
         {
 
@@ -112,6 +119,7 @@ public class Board : MonoBehaviour
         if(_tileList.Count == 0 && BarManager.Instance.IsEmpty)
         {
             Debug.Log("[BOARD] WIN GAMEEEEEEEEEEEEEE");
+            OnBoardClear?.Invoke();
             //return true;
             return;
         }

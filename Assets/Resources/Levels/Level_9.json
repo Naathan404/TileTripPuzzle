@@ -1,9 +1,19 @@
 {
-    "LevelID": 2,
-    "LevelName": "Level_2",
+    "LevelID": 9,
+    "LevelName": "Level_9",
     "TotalTiles": 66,
     "SpacingX": 0.75,
-    "SpacingY": 0.75,
+    "SpacingY": 0.8,
+        "AvailableTileIDs": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+    ],
     "Layers": [
         {
             "ZIndex": 0,

@@ -11,7 +11,7 @@ public class LevelEditor : EditorWindow
     private int gridSizeY = 18;
     private int currentLayerZ = 0; 
     private int levelID = 1;
-
+    private List<int> availableTileIDs = new List<int>() { 1, 2, 3, 4, 5 };
     private Vector2 tileSpacing = new Vector2(0.75f, 0.8f);
 
     private float cellSize = 20f; 
@@ -36,21 +36,53 @@ public class LevelEditor : EditorWindow
     /// <summary>
     /// Vẽ header
     /// </summary>
-    private void DrawHeader()
+private void DrawHeader()
     {
         GUILayout.Label("THIẾT KẾ BẢN ĐỒ TILE MATCH", EditorStyles.boldLabel);
         GUILayout.Space(10);
 
+        // Box Level ID
         GUILayout.BeginVertical("box");
         GUILayout.Label("ID màn chơi", EditorStyles.boldLabel);
         levelID = EditorGUILayout.IntField("LevelID: ", levelID);
         GUILayout.EndVertical();
 
+        // Box Cấu Hình Khoảng Cách
         GUILayout.BeginVertical("box");
         GUILayout.Label("Cấu Hình Khoảng Cách", EditorStyles.boldLabel);
         tileSpacing = EditorGUILayout.Vector2Field("Khoảng cách thẻ (Spacing)", tileSpacing);
         GUILayout.EndVertical();
 
+        // Box Danh Sách Tile ID (Mới thêm)
+        GUILayout.BeginVertical("box");
+        GUILayout.Label("Danh Sách Tile ID (Các loại quả)", EditorStyles.boldLabel);
+        
+        for (int i = 0; i < availableTileIDs.Count; i++)
+        {
+            GUILayout.BeginHorizontal();
+            // Ô nhập ID
+            availableTileIDs[i] = EditorGUILayout.IntField($"ID {i}:", availableTileIDs[i]);
+            // Nút xóa
+            GUI.backgroundColor = Color.red;
+            if (GUILayout.Button("X", GUILayout.Width(25)))
+            {
+                availableTileIDs.RemoveAt(i);
+                GUI.backgroundColor = Color.white;
+                break; 
+            }
+            GUI.backgroundColor = Color.white;
+            GUILayout.EndHorizontal();
+        }
+
+        // Nút thêm ID
+        if (GUILayout.Button("+ Thêm ID Mới", GUILayout.Width(120)))
+        {
+            availableTileIDs.Add(availableTileIDs.Count); 
+        }
+        GUILayout.EndVertical();
+        GUILayout.Space(10);
+
+        // Thanh điều khiển Layer 
         GUILayout.BeginHorizontal();
         GUILayout.Label($"Đang vẽ ở Layer Z = {currentLayerZ}", GUILayout.Width(150));
         
@@ -62,11 +94,12 @@ public class LevelEditor : EditorWindow
         
         if(GUILayout.Button("Clear", GUILayout.Width(100)))
         {
-            List<Vector2> currentLayerList = layerDataDict[currentLayerZ];
-            currentLayerList.Clear();
+            if (layerDataDict.ContainsKey(currentLayerZ))
+            {
+                List<Vector2> currentLayerList = layerDataDict[currentLayerZ];
+                currentLayerList.Clear();
+            }
         }
-
-
             
         GUILayout.EndHorizontal();
         GUILayout.Space(10);
@@ -157,6 +190,7 @@ public class LevelEditor : EditorWindow
         newLevel.LevelName = "Level_" + levelID; 
         newLevel.SpacingX = tileSpacing.x;
         newLevel.SpacingY = tileSpacing.y;
+        newLevel.AvailableTileIDs = new List<int>(availableTileIDs);
         int totalTilesCount = 0;
 
         foreach (var kvp in layerDataDict)

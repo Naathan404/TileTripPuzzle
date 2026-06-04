@@ -10,18 +10,30 @@ public class LevelGenerator : MonoBehaviour
 {
     [Header("Cài đặt Level")]
     [SerializeField] private string _levelFileName = "Level_1";
-    [SerializeField] private int[] _availableTileIDs = { 0, 1, 2, 3, 4 }; 
     [Header("Components")]
     [SerializeField] private Board _board; 
     private LevelData _levelData;
     private List<TileData> _tileDatas = new List<TileData>();
+
     private Vector2 _tileSpacing = new Vector2(1.2f, 1.4f);
+
+    private void OnEnable()
+    {
+    }
+
+    private void OnDisable()
+    {
+    }
 
     private void Start()
     {
         LoadLevelData();
 
+        StartLevel();
+    }
 
+    private void StartLevel()
+    {
         _board.InitBoard(_tileDatas, _tileSpacing.x, _tileSpacing.y);
     }
 
@@ -67,7 +79,7 @@ public class LevelGenerator : MonoBehaviour
         int mark = 0;
         for(int i = 0; i < _levelData.TotalTiles / 3; i++)
         {
-            int randomId = _availableTileIDs[Random.Range(0, _availableTileIDs.Length)];
+            int randomId = _levelData.AvailableTileIDs[Random.Range(0, _levelData.AvailableTileIDs.Count)];
             for(int j = 0; j < 3; j++)
             {
                 _unsignedTileDatas[mark++].TileID = randomId;
