@@ -42,9 +42,9 @@ public class Tile : MonoBehaviour, IPointerClickHandler
         {
             int rnd = Random.Range(1, 10);
             if(rnd > 5)
-                transform.DOPunchRotation(new Vector3(0, 0, 15f), 0.2f, vibrato: 1, elasticity: 0.5f);
+                transform.DOPunchRotation(new Vector3(0, 0, 15f), 0.1f, vibrato: 1, elasticity: 0.5f).SetEase(Ease.OutElastic);
             else
-                transform.DOPunchRotation(new Vector3(0, 0, -15f), 0.2f, vibrato: 1, elasticity: 0.5f);
+                transform.DOPunchRotation(new Vector3(0, 0, -15f), 0.1f, vibrato: 1, elasticity: 0.5f).SetEase(Ease.OutElastic);
             AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Blocked);
             Debug.Log($"Tile at position: ({Data.X}, {Data.Y}) is blocked. Click ignored.");
             return;
@@ -75,11 +75,11 @@ public class Tile : MonoBehaviour, IPointerClickHandler
         {
             _imageSprite.color = _disableColor;
             _spriteRenderer.color = _disableColor;
-            _collider.enabled = false;
+            //_collider.enabled = false;
         }
         else
         {
-            _collider.enabled = true;
+            //_collider.enabled = true;
 
             _imageSprite.DOColor(Color.white, _fadeInDuration);
             _spriteRenderer.DOColor(Color.white, _fadeInDuration);
