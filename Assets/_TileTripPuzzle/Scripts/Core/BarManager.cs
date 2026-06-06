@@ -11,8 +11,9 @@ public class BarManager : Singleton<BarManager>
 {
     [Header("Bar Settings")]
     [SerializeField] private int _maxBarCapacity = 7;
+    [SerializeField] private float _tileSpacing = 0.5f;
     [SerializeField] private List<Tile> _tileList = new List<Tile>();
-    [SerializeField] private List<Transform> transforms = new List<Transform>();
+    [SerializeField] private List<Transform> _slots = new List<Transform>();
 
 
     [Header("Animation Settings")]
@@ -35,6 +36,22 @@ public class BarManager : Singleton<BarManager>
     private void OnDisable()
     {
         Tile.OnTileClicked -= AddTileToBar;
+    }
+
+    private void Start()
+    {
+        GenerateSlots();
+    }
+
+    private void GenerateSlots()
+    {
+        float totalWidth = (_maxBarCapacity - 1) * _tileSpacing;
+        float startX = -totalWidth / 2f;
+
+        for (int i = 0; i < _maxBarCapacity; i++)
+        {
+            _slots[i].transform.position = new Vector3(startX + i * _tileSpacing, this.transform.position.y, 10);
+        }
     }
 
     public void AddTileToBar(Tile tile)
@@ -97,7 +114,7 @@ public class BarManager : Singleton<BarManager>
         {
             if(_tileList[i] == null) continue;
             Tile currentTile = _tileList[i];
-            Vector3 targetPosition = transforms[i].position;
+            Vector3 targetPosition = _slots[i].position;
             
             currentTile.transform.DOKill();
             currentTile.transform.DOScale(1f, _tileMoveDuration); 

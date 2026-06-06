@@ -4,11 +4,7 @@
     "TotalTiles": 9,
     "SpacingX": 0.75,
     "SpacingY": 0.800000011920929,
-    "AvailableTileIDs": [
-        1,
-        2,
-        3
-    ],
+    "AvailableTileNumber": 3,
     "Layers": [
         {
             "ZIndex": 0,

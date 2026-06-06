@@ -17,6 +17,11 @@ public class LevelManager : MonoBehaviour
     private LevelData _levelData;
     public int CurrentLevelString => _saveData.CurrentLevel;
 
+    private List<int> _availableTileIDs = new List<int>();
+    List<int> _dummyIdList = new List<int>();
+
+    private const int TOTAL_AVALABLE_TILE_ID = 14;
+
     
     private void Start()
     {
@@ -87,6 +92,20 @@ public class LevelManager : MonoBehaviour
             return;
         }
 
+        _dummyIdList.Clear();
+        _availableTileIDs.Clear();
+        for(int i = 1; i <= TOTAL_AVALABLE_TILE_ID; i++)
+        {
+            _dummyIdList.Add(i);
+        }
+
+        for(int i = 0; i < _levelData.AvailableTileNumber; i++)
+        {
+            int rnd = Random.Range(0, _dummyIdList.Count - 1);
+            _availableTileIDs.Add(_dummyIdList[rnd]);
+            _dummyIdList.RemoveAt(rnd);
+        }
+
         List<TileData> tileDatas = ConvertDataToGrid(_levelData);
         _board.InitBoard(tileDatas, _levelData.SpacingX, _levelData.SpacingY);
     }
@@ -100,7 +119,7 @@ public class LevelManager : MonoBehaviour
     private List<TileData> ConvertDataToGrid(LevelData levelData)
     {
         List<TileData> _unsignedTileDatas = new List<TileData>();
-        List<int> idPool = BuildIDPool(levelData.TotalTiles, levelData.AvailableTileIDs);
+        List<int> idPool = BuildIDPool(levelData.TotalTiles, _availableTileIDs);
 
         foreach(LayerData layer in levelData.Layers)
         {
@@ -113,16 +132,38 @@ public class LevelManager : MonoBehaviour
 
         /// Mix _tileList bằng Fisher yates
         bool isSuccess = false;
-        while(!isSuccess)
+        int attemp = 0;
+        while(!isSuccess && attemp < 30)
         {
+            foreach (var t in _unsignedTileDatas) t.TileID = -1;
+            ShuffleList(idPool);
             isSuccess = AssignTilesBackward(_unsignedTileDatas, idPool);
-            if(!isSuccess)
-            {
-                DebugManager.Instance.Log("[LEVEL MANAGER] Không thể sinh hợp lệ");
-            }
+            attemp += 1;
+        }
+
+        if (!isSuccess)
+        {
+            Debug.LogWarning($"[LEVEL MANAGER] Sinh ngược thất bại sau {attemp} lần, dùng sinh xuôi!");
+            AssignTilesForward(_unsignedTileDatas, idPool);
+        }
+        else
+        {
+            Debug.Log($"[LEVEL MANAGER] Sinh ngược thành công sau {attemp} lần!");
         }
 
         return _unsignedTileDatas;
+    }
+
+    private void AssignTilesForward(List<TileData> tiles, List<int> idPool)
+    {
+        ShuffleList(tiles);
+        ShuffleList(idPool);
+
+        int mark = 0;
+        int setsNeeded = tiles.Count / 3;
+        for (int i = 0; i < setsNeeded; i++)
+            for (int j = 0; j < 3; j++)
+                tiles[mark++].TileID = idPool[i % idPool.Count];
     }
 
     private List<int> BuildIDPool(int totalTiles, List<int> availableIDs)

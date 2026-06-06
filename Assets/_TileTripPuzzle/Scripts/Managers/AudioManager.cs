@@ -29,9 +29,10 @@ public class AudioManager : Singleton<AudioManager>
 
     private void Start()
     {
+        BGMSource.loop = true;
         SetVolume();
-        BGMSource.clip = BGM_1;
-        BGMSource.Play();
+
+        PlayMusic(BGM_1);
     }
 
     public void StopAll()

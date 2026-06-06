@@ -92,8 +92,15 @@ public class Tile : MonoBehaviour, IPointerClickHandler
         _collider.enabled = false;
         _spriteRenderer.sortingOrder = 998;
         _imageSprite.sortingOrder = 999;
-        transform.DOScale(0f, _disappearDuration)
-            .SetEase(Ease.InBack)
-            .OnComplete(() => Destroy(gameObject));
+
+        Sequence seq = DOTween.Sequence();
+        seq.Append(transform.DOScale(1.3f, 0.1f).SetEase(Ease.OutBack));
+
+        seq.Append(transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack));
+        seq.Join(transform.DORotate(new Vector3(0f, 0f, Random.Range(-45f, 45f)), _disappearDuration));
+        seq.Join(_spriteRenderer.DOFade(0f, _disappearDuration));
+        seq.Join(_imageSprite.DOFade(0f, _disappearDuration));
+
+        seq.OnComplete(() => Destroy(gameObject));
     }
 }
