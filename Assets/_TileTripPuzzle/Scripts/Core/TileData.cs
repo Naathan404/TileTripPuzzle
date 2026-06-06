@@ -17,6 +17,8 @@ public class TileData
         Z = z;
         TileID = id;
         IsBlocked = false;
+        Width = 1f;
+        Height = 1f;
     }
 
     /// <summary>

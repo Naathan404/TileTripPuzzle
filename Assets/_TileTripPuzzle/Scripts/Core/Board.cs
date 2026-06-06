@@ -15,13 +15,13 @@ public class Board : MonoBehaviour
 
     private void OnEnable()
     {
-        Tile.OnTileClicked += UpdateBoardVisual;
+        BarManager.OnTileMove += UpdateBoardVisual;
         BarManager.OnTileRemoved += CheckWinConditions;
     }
 
     private void OnDisable()
     {
-        Tile.OnTileClicked -= UpdateBoardVisual;
+        BarManager.OnTileMove -= UpdateBoardVisual;
         BarManager.OnTileRemoved -= CheckWinConditions;
     }
 
@@ -76,9 +76,18 @@ public class Board : MonoBehaviour
         }
     }
 
+    public void ClearBoard()
+    {
+        List<Tile> tilesToDestroy = new List<Tile>(_tileList);
+        _tileList.Clear();
 
+        foreach(var tile in tilesToDestroy)
+        {
+            if (tile != null) Destroy(tile.gameObject);
+        }
+    }
 
-    #region Các hàm trợ giúp
+    #region Helpers
     public bool CheckTileBlocked(Tile tileToCheck)
     {
         /// Kiểm tra overlapping: |X_A - X_B| < Width |Y_A - Y_B| < Height

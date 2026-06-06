@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public enum GameState
 {
@@ -43,9 +44,10 @@ public class GameManager : Singleton<GameManager>
         if (CurrentGameState != GameState.Playing) return;
         if(!BarManager.Instance.IsEmpty) return;
 
+        AudioManager.Instance.PauseMusic();
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Victory_1);
         Debug.Log("[GAME MANAGER] Win level");
         CurrentGameState = GameState.Win;
-        NextLevel();
         OnLevelWin?.Invoke();
     }
 
@@ -56,6 +58,8 @@ public class GameManager : Singleton<GameManager>
     {
         if (CurrentGameState != GameState.Playing) return;
 
+        AudioManager.Instance.PauseMusic();
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Fail);
         Debug.Log("[GAME MANAGER] Lose level");
         CurrentGameState = GameState.Lose;
         OnLevelLose?.Invoke();
@@ -69,6 +73,7 @@ public class GameManager : Singleton<GameManager>
         Debug.Log("[GAME MANAGER] Next level");
         CurrentGameState = GameState.Playing;
         Reset();
+        AudioManager.Instance.UnPauseMusic();
         _levelManager.LoadNextLevel();
     }
 
@@ -77,6 +82,7 @@ public class GameManager : Singleton<GameManager>
         Debug.Log("[GAME MANAGER] Replay level");
         CurrentGameState = GameState.Playing;
         Reset();
+        AudioManager.Instance.PlayMusic(AudioManager.Instance.BGM_1, true);
         _levelManager.ReplayLevel();
 
     }
@@ -86,6 +92,11 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void Reset()
     {
-        BarManager.Instance.ClearBar();
+        Debug.Log("[GAME MANAGER] Reset");
+    }
+
+    public void SetGameState(GameState newState)
+    {
+        CurrentGameState = newState;
     }
 }

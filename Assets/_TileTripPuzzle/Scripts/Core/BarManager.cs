@@ -4,6 +4,8 @@ using DG.Tweening;
 using Unity.VisualScripting;
 using System.Collections;
 using System;
+using UnityEngine.XR;
+using UnityEngine.Rendering;
 
 public class BarManager : Singleton<BarManager>
 {
@@ -11,14 +13,12 @@ public class BarManager : Singleton<BarManager>
     [SerializeField] private int _maxBarCapacity = 7;
     [SerializeField] private List<Tile> _tileList = new List<Tile>();
     [SerializeField] private List<Transform> transforms = new List<Transform>();
-    
+
 
     [Header("Animation Settings")]
     [SerializeField] private float _tileMoveDuration = 0.3f;
-    [SerializeField] private float _disappearDuration = 0.3f;
-    [SerializeField] private float _waitTime = 0.5f;
     
-    public bool IsFull => _tileList.Count == _maxBarCapacity;
+    public bool IsFull => _tileList.Count >= _maxBarCapacity;
     public bool IsEmpty => _tileList.Count == 0;
     private bool _isProcessing = false;
     public bool IsProcessing => _isProcessing;
@@ -26,6 +26,7 @@ public class BarManager : Singleton<BarManager>
 
     public static event System.Action OnBarFull;
     public static event Action OnTileRemoved;
+    public static event Action<Tile> OnTileMove;
 
     private void OnEnable()
     {
@@ -36,21 +37,41 @@ public class BarManager : Singleton<BarManager>
         Tile.OnTileClicked -= AddTileToBar;
     }
 
-    public async void AddTileToBar(Tile tile)
+    public void AddTileToBar(Tile tile)
     {
-        if (_isProcessing) return;
         if (_tileList.Count >= _maxBarCapacity)
         {
-            Debug.Log("Bar is at maximum capacity. Cannot add more tiles.");
+            DebugManager.Instance.Log("Bar is at maximum capacity. Cannot add more tiles.");
             return;
         }
 
+        if (_isProcessing)
+        {
+            return;
+        }
+
+        int rnd = UnityEngine.Random.Range(1, 10);
+        if(rnd > 5)
+            tile.transform.DOPunchRotation(new Vector3(0, 0, 15f), 0.2f, vibrato: 1, elasticity: 0.5f);
+        else
+            tile.transform.DOPunchRotation(new Vector3(0, 0, -15f), 0.2f, vibrato: 1, elasticity: 0.5f);
+        tile.transform.DOPunchScale(Vector3.one * 0.2f, 0.2f, vibrato: 1, elasticity: 0.5f)
+                    .OnComplete(() =>
+                    {
+                        OnTileMove?.Invoke(tile);
+                        HandleAddTile(tile);
+                    });
+
+    }
+
+    private void HandleAddTile(Tile tile)
+    {
         int insertIndex = FindInsertIndex(tile);
         _tileList.Insert(insertIndex, tile);
         UpdateBarDisplay();
 
         CancelInvoke(nameof(CheckForMatches));
-        Invoke("CheckForMatches", _waitTime);
+        Invoke("CheckForMatches", _tileMoveDuration);
     }
 
 
@@ -88,10 +109,12 @@ public class BarManager : Singleton<BarManager>
     {
         StopAllCoroutines();
         CancelInvoke(nameof(CheckForMatches));
-        _tileList.Clear();
         _isProcessing = false;
  
-        foreach (var tile in _tileList)
+        List<Tile> tilesToDestroy = new List<Tile>(_tileList);
+        _tileList.Clear();
+
+        foreach(var tile in tilesToDestroy)
         {
             if (tile != null) Destroy(tile.gameObject);
         }
@@ -106,7 +129,7 @@ public class BarManager : Singleton<BarManager>
             if(_tileList == null) continue;
             if(_tileList[i].TileID == _tileList[i + 1].TileID && _tileList[i].TileID == _tileList[i + 2].TileID)
             {
-                Debug.Log($"Match found at index: {i}");
+                DebugManager.Instance.Log($"[BAR MANAGER] Match found at index: {i}");
                 tileIDToRemove = _tileList[i].TileID;
                 startingRemoveIndex = i;
                 break; 
@@ -117,38 +140,53 @@ public class BarManager : Singleton<BarManager>
         {
             if(_tileList.Count >= _maxBarCapacity)
             {
-                Debug.Log("[BAR] Bar is full!");
+                DebugManager.Instance.Log("[BAR] Bar is full!");
                 OnBarFull?.Invoke();
                 return;
             }
             return;
         }
 
-        StartCoroutine(RemoveMatchedTiles(startingRemoveIndex, tileIDToRemove));
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Match);
+        RemoveMatchedTiles(startingRemoveIndex);
     }
 
-    private IEnumerator RemoveMatchedTiles(int startingRemoveIndex, int idToRemove)
+    // private IEnumerator RemoveMatchedTiles(int startingRemoveIndex, int idToRemove)
+    // {
+    //     _isProcessing = true;
+
+    //     _tileList[startingRemoveIndex].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
+    //         yield return null;
+    //     _tileList[startingRemoveIndex + 1].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
+    //         yield return null;
+    //     _tileList[startingRemoveIndex + 2].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
+    //         yield return new WaitForSeconds(_disappearDuration);
+
+    //     for(int i = 0; i < 3; i++)
+    //     {
+    //         Tile tileToRemove = _tileList[startingRemoveIndex];
+    //         _tileList.RemoveAt(startingRemoveIndex);
+    //         Destroy(tileToRemove.gameObject);
+    //     }
+    //     UpdateBarDisplay();
+    //     yield return new WaitForSeconds(_tileMoveDuration);
+
+    //     _isProcessing = false;
+    //     CheckForMatches();
+    //     OnTileRemoved?.Invoke();
+    // }
+
+    private void RemoveMatchedTiles(int startIndex)
     {
-        _isProcessing = true;
-
-        _tileList[startingRemoveIndex].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
-            yield return new WaitForSeconds(_disappearDuration);
-        _tileList[startingRemoveIndex + 1].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
-            yield return new WaitForSeconds(_disappearDuration);
-        _tileList[startingRemoveIndex + 2].transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack);
-            yield return new WaitForSeconds(_disappearDuration);
-
         for(int i = 0; i < 3; i++)
         {
-            Tile tileToRemove = _tileList[startingRemoveIndex];
-            _tileList.RemoveAt(startingRemoveIndex);
-            Destroy(tileToRemove.gameObject);
+            Tile tile = _tileList[startIndex];
+            _tileList.RemoveAt(startIndex);
+            tile.PlayDisappearAnimation(); 
         }
-        UpdateBarDisplay();
-        _isProcessing = false;
 
-        CheckForMatches();
+        UpdateBarDisplay();
+        CheckForMatches(); 
         OnTileRemoved?.Invoke();
     }
-
 }

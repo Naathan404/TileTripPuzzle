@@ -56,6 +56,7 @@ MonoBehaviour:
     Width: 0
     Height: 0
   _fadeInDuration: 0.2
+  _disappearDuration: 0.2
   _imageList:
   - {fileID: -855298285791758126, guid: d486ffd0d31c4c84685f6fa371696cb2, type: 3}
   - {fileID: 6937817954938267909, guid: 62dcec6211a18dc4d89c9f6d2a4a2a93, type: 3}

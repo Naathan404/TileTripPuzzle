@@ -9,7 +9,8 @@ public class Tile : MonoBehaviour, IPointerClickHandler
     [Header("Tile Settings")]
     public TileData Data;
     public int TileID => Data.TileID;
-    [SerializeField] private float _fadeInDuration = 0.25f;
+    [SerializeField] private float _fadeInDuration = 0.2f;
+    [SerializeField] private float _disappearDuration = 0.2f;
     [SerializeField] private Sprite[] _imageList;
     [Header("Tile Components")]
     [SerializeField] private SpriteRenderer _imageSprite;
@@ -28,15 +29,28 @@ public class Tile : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(BarManager.Instance.IsFull) return;
-        if(BarManager.Instance.IsProcessing) return;
+        if(BarManager.Instance.IsFull)
+        {
+            return;
+        }
+        if(GameManager.Instance.CurrentGameState != GameState.Playing)
+        {
+            return;
+        }
         
         if(Data.IsBlocked)
         {
+            int rnd = Random.Range(1, 10);
+            if(rnd > 5)
+                transform.DOPunchRotation(new Vector3(0, 0, 15f), 0.2f, vibrato: 1, elasticity: 0.5f);
+            else
+                transform.DOPunchRotation(new Vector3(0, 0, -15f), 0.2f, vibrato: 1, elasticity: 0.5f);
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Blocked);
             Debug.Log($"Tile at position: ({Data.X}, {Data.Y}) is blocked. Click ignored.");
             return;
         }
-
+        
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Tap);
         Debug.Log($"Tile clicked at position: ({Data.X}, {Data.Y})");
         _collider.enabled = false;
         Data.IsBlocked = true;
@@ -71,5 +85,15 @@ public class Tile : MonoBehaviour, IPointerClickHandler
             _spriteRenderer.DOColor(Color.white, _fadeInDuration);
         }
         Data.IsBlocked = wasBlocked;
+    }
+
+    public void PlayDisappearAnimation()
+    {
+        _collider.enabled = false;
+        _spriteRenderer.sortingOrder = 998;
+        _imageSprite.sortingOrder = 999;
+        transform.DOScale(0f, _disappearDuration)
+            .SetEase(Ease.InBack)
+            .OnComplete(() => Destroy(gameObject));
     }
 }
