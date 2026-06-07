@@ -1,28 +1,42 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class Board : MonoBehaviour
 {
     [Header("Board Settings")]
     [SerializeField] private List<Tile> _tileList = new List<Tile>();
+    [SerializeField] private float _stackOffset = 0.05f;
+    [SerializeField] private float _boardYOffset = 0.5f;
     
     [Header("References")]
     [SerializeField] private GameObject _tilePrefab;
 
+    public static event Action OnBoardClear;
+
     private void OnEnable()
     {
-        Tile.OnTileClicked += UpdateBoardVisual;
+        BarManager.OnTileMove += UpdateBoardVisual;
+        BarManager.OnTileRemoved += CheckWinConditions;
     }
 
     private void OnDisable()
     {
-        Tile.OnTileClicked -= UpdateBoardVisual;
+        BarManager.OnTileMove -= UpdateBoardVisual;
+        BarManager.OnTileRemoved -= CheckWinConditions;
     }
 
     public void InitBoard(List<TileData> datas, float spacingX, float spacingY)
     {
-        
+        transform.position = Vector2.zero + new Vector2(0, _boardYOffset);
+
+        foreach (var tile in _tileList)
+        {
+            if (tile != null) Destroy(tile.gameObject);
+        }
+        _tileList.Clear();
+
         foreach (TileData data in datas)
         {
 
@@ -55,7 +69,7 @@ public class Board : MonoBehaviour
         foreach(var tile in _tileList)
         {
             float posX = this.transform.position.x + tile.Data.X * spacingX;
-            float posY = this.transform.position.y - tile.Data.Y * spacingY + tile.Data.Z * 0.1f;
+            float posY = this.transform.position.y - tile.Data.Y * spacingY + tile.Data.Z * _stackOffset;
             Vector3 finalPos = new Vector3(posX, posY, 0);
             tile.transform.position = finalPos;
 
@@ -64,9 +78,18 @@ public class Board : MonoBehaviour
         }
     }
 
+    public void ClearBoard()
+    {
+        List<Tile> tilesToDestroy = new List<Tile>(_tileList);
+        _tileList.Clear();
 
+        foreach(var tile in tilesToDestroy)
+        {
+            if (tile != null) Destroy(tile.gameObject);
+        }
+    }
 
-    #region Các hàm trợ giúp
+    #region Helpers
     public bool CheckTileBlocked(Tile tileToCheck)
     {
         /// Kiểm tra overlapping: |X_A - X_B| < Width |Y_A - Y_B| < Height
@@ -90,16 +113,55 @@ public class Board : MonoBehaviour
         _tileList.Remove(tile);
 
         Debug.Log("[BOARD] nhận được tín hiệu click 1 Tile");
-        if(temp.Data.Z == 0) return;
 
-        foreach(var t in _tileList)
+        if(temp.Data.Z > 0)
         {
-            if(t.Data.Z >= temp.Data.Z) continue;
+            foreach(var t in _tileList)
+            {
+                if(t.Data.Z >= temp.Data.Z) continue;
 
-            t.SetStateBlocked(CheckTileBlocked(t));
+                t.SetStateBlocked(CheckTileBlocked(t));
+            }
+        }
+    }
+
+    private void CheckWinConditions()
+    {
+        Debug.Log($"[BOARD] Còn {_tileList.Count} thẻ");
+
+        if(_tileList.Count == 0 && BarManager.Instance.IsEmpty)
+        {
+            Debug.Log("[BOARD] WIN GAMEEEEEEEEEEEEEE");
+            OnBoardClear?.Invoke();
+            //return true;
+            return;
+        }
+        //return false;
+    }
+    
+    private void ShuffleBoard()
+    {
+        // Lưu lại tất cả vị trí (Vector3) hiện tại của các ô
+        List<Vector3> allPositions = new List<Vector3>();
+        foreach (Tile tile in _tileList)
+        {
+            allPositions.Add(tile.transform.position);
         }
 
-        Debug.Log($"[BOARD] Còn {_tileList.Count} thẻ");
+        for (int i = 0; i < allPositions.Count; i++)
+        {
+            Vector3 temp = allPositions[i];
+            int randomIndex = UnityEngine.Random.Range(i, allPositions.Count);
+            allPositions[i] = allPositions[randomIndex];
+            allPositions[randomIndex] = temp;
+        }
+
+        for (int i = 0; i < _tileList.Count; i++)
+        {
+            _tileList[i].transform.DOMove(allPositions[i], 0.3f);
+        }
     }
     #endregion
+
+
 }
