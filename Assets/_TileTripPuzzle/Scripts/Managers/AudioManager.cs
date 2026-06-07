@@ -24,9 +24,6 @@ public class AudioManager : Singleton<AudioManager>
     public AudioClip SFX_Blocked;
     public AudioClip SFX_Button;
 
-    private float lastSFXTime = -1f;
-    private float sfxCoolDown = 0.03f;
-
     private void Start()
     {
         BGMSource.loop = true;
@@ -54,9 +51,10 @@ public class AudioManager : Singleton<AudioManager>
         BGMSource.Play();
     }
 
-    public void PlaySFX(AudioClip sfx)
+    public void PlaySFX(AudioClip sfx, float volume = 1f)
     {
-        SFXSource.PlayOneShot(sfx);
+        if(sfx == null) return;
+        SFXSource.PlayOneShot(sfx, volume);
     }
 
     public void FadeOutMusic()
@@ -82,10 +80,10 @@ public class AudioManager : Singleton<AudioManager>
 
     public void SetVolume()
     {
-        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
-        float sfxVolume = PlayerPrefs.GetFloat("SfxVolume", 1f);
-        audioMixer.SetFloat("MusicVolume", Mathf.Log10(musicVolume) * 20);
-        audioMixer.SetFloat("SfxVolume", Mathf.Log10(sfxVolume) * 20);
+        float musicVolume = PlayerPrefs.GetFloat("BGMVolume", 1f);
+        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        audioMixer.SetFloat("BGMVolume", Mathf.Log10(musicVolume) * 20);
+        audioMixer.SetFloat("SFXVolume", Mathf.Log10(sfxVolume) * 20);
     }
 
     public void PauseMusic()

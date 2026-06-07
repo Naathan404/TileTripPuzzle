@@ -7,7 +7,7 @@ using System;
 using UnityEngine.XR;
 using UnityEngine.Rendering;
 
-public class BarManager : Singleton<BarManager>
+public class BarManager : MonoBehaviour
 {
     [Header("Bar Settings")]
     [SerializeField] private int _maxBarCapacity = 7;
@@ -28,6 +28,20 @@ public class BarManager : Singleton<BarManager>
     public static event System.Action OnBarFull;
     public static event Action OnTileRemoved;
     public static event Action<Tile> OnTileMove;
+
+    public static BarManager Instance;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
 
     private void OnEnable()
     {

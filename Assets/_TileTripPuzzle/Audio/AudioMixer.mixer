@@ -20,7 +20,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SFX
+  m_Name: SFXVolume
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: c3e4c5cedc045b8469a8c7e92f0c1be9
   m_Children: []
@@ -62,7 +62,11 @@ AudioMixerController:
   m_SuspendThreshold: -80
   m_EnableSuspend: 1
   m_UpdateMode: 0
-  m_ExposedParameters: []
+  m_ExposedParameters:
+  - guid: 09d340a9d12e3964697eccb3eba72194
+    name: BGMVolume
+  - guid: 18357c2db6848ba4bb2e95f13eab23ec
+    name: SFXVolume
   m_AudioMixerGroupViews:
   - guids:
     - ce519d8fda5cb504d84eaec903dc5e79
@@ -123,7 +127,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BGM
+  m_Name: BGMVolume
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 80b7cd51d68f5ea4cb44116a99d95def
   m_Children: []

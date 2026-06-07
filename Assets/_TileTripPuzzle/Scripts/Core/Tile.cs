@@ -14,7 +14,9 @@ public class Tile : MonoBehaviour, IPointerClickHandler
     [SerializeField] private Sprite[] _imageList;
     [Header("Tile Components")]
     [SerializeField] private SpriteRenderer _imageSprite;
+    [SerializeField] private ParticleSystem _effect;
     private BoxCollider2D _collider;
+
 
     private SpriteRenderer _spriteRenderer;
     private Color _disableColor = new Color(0.5f, 0.5f, 0.5f);
@@ -93,14 +95,18 @@ public class Tile : MonoBehaviour, IPointerClickHandler
         _spriteRenderer.sortingOrder = 998;
         _imageSprite.sortingOrder = 999;
 
+        ParticleSystem eff = EffectManager.Instance.PlayTileEffect();
+        eff.transform.position = this.transform.position;
         Sequence seq = DOTween.Sequence();
         seq.Append(transform.DOScale(1.3f, 0.1f).SetEase(Ease.OutBack));
-
         seq.Append(transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack));
         seq.Join(transform.DORotate(new Vector3(0f, 0f, Random.Range(-45f, 45f)), _disappearDuration));
         seq.Join(_spriteRenderer.DOFade(0f, _disappearDuration));
         seq.Join(_imageSprite.DOFade(0f, _disappearDuration));
 
-        seq.OnComplete(() => Destroy(gameObject));
+        seq.OnComplete(() => {
+            Destroy(gameObject);
+            EffectManager.Instance.ReleaseTileEffect(eff);
+        });
     }
 }

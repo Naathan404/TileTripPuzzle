@@ -10,7 +10,7 @@ public enum GameState
     Pause
 }
 
-public class GameManager : Singleton<GameManager>
+public class GameManager : MonoBehaviour
 {
     public GameState CurrentGameState { get; private set; } = GameState.Playing;
 
@@ -21,6 +21,18 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private LevelManager _levelManager;
 
     #region Object Life cycle
+    public static GameManager Instance;
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
     private void OnEnable()
     {
         BarManager.OnBarFull += HandleLoseLevel;
@@ -45,7 +57,7 @@ public class GameManager : Singleton<GameManager>
         if(!BarManager.Instance.IsEmpty) return;
 
         AudioManager.Instance.PauseMusic();
-        AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Victory_1);
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Victory_1, 0.8f);
         Debug.Log("[GAME MANAGER] Win level");
         CurrentGameState = GameState.Win;
         OnLevelWin?.Invoke();

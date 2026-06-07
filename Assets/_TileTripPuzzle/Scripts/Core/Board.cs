@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class Board : MonoBehaviour
@@ -7,6 +8,7 @@ public class Board : MonoBehaviour
     [Header("Board Settings")]
     [SerializeField] private List<Tile> _tileList = new List<Tile>();
     [SerializeField] private float _stackOffset = 0.05f;
+    [SerializeField] private float _boardYOffset = 0.5f;
     
     [Header("References")]
     [SerializeField] private GameObject _tilePrefab;
@@ -27,7 +29,7 @@ public class Board : MonoBehaviour
 
     public void InitBoard(List<TileData> datas, float spacingX, float spacingY)
     {
-        transform.position = Vector2.zero;
+        transform.position = Vector2.zero + new Vector2(0, _boardYOffset);
 
         foreach (var tile in _tileList)
         {
@@ -136,5 +138,30 @@ public class Board : MonoBehaviour
         }
         //return false;
     }
+    
+    private void ShuffleBoard()
+    {
+        // Lưu lại tất cả vị trí (Vector3) hiện tại của các ô
+        List<Vector3> allPositions = new List<Vector3>();
+        foreach (Tile tile in _tileList)
+        {
+            allPositions.Add(tile.transform.position);
+        }
+
+        for (int i = 0; i < allPositions.Count; i++)
+        {
+            Vector3 temp = allPositions[i];
+            int randomIndex = UnityEngine.Random.Range(i, allPositions.Count);
+            allPositions[i] = allPositions[randomIndex];
+            allPositions[randomIndex] = temp;
+        }
+
+        for (int i = 0; i < _tileList.Count; i++)
+        {
+            _tileList[i].transform.DOMove(allPositions[i], 0.3f);
+        }
+    }
     #endregion
+
+
 }

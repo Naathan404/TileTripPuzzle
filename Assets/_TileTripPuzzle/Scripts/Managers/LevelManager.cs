@@ -13,9 +13,13 @@ public class LevelManager : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private int _totalLevels = 10;
 
+    [Header("Backgrounds")]
+    [SerializeField] private SpriteRenderer _currentBackground;
+    [SerializeField] private List<Sprite> _backgrounds = new List<Sprite>();
+
     private SaveData _saveData;
     private LevelData _levelData;
-    public int CurrentLevelString => _saveData.CurrentLevel;
+    public int CurrentLevelID => _saveData.CurrentLevel;
 
     private List<int> _availableTileIDs = new List<int>();
     List<int> _dummyIdList = new List<int>();
@@ -25,6 +29,11 @@ public class LevelManager : MonoBehaviour
     
     private void Start()
     {
+        if(_backgrounds.Count < 1)
+        {
+            DebugManager.Instance.LogError("[LEVEL MANAGER] Background List is empty");
+            return;
+        }
         _saveData = SaveSystem.Load();
         LoadCurrentLevel();
     }
@@ -78,6 +87,9 @@ public class LevelManager : MonoBehaviour
     /// <param name="levelID"></param>
     public void LoadLevel(int levelID)
     {
+        /// load hình background lên
+        LoadBackground();
+
         TextAsset jsonTextAssets = Resources.Load<TextAsset>("Levels/Level_" + levelID);
         if (jsonTextAssets == null)
         {
@@ -106,6 +118,7 @@ public class LevelManager : MonoBehaviour
             _dummyIdList.RemoveAt(rnd);
         }
 
+        UIManager.Instance.UpdateLevelUI(CurrentLevelID);
         List<TileData> tileDatas = ConvertDataToGrid(_levelData);
         _board.InitBoard(tileDatas, _levelData.SpacingX, _levelData.SpacingY);
     }
@@ -154,6 +167,11 @@ public class LevelManager : MonoBehaviour
         return _unsignedTileDatas;
     }
 
+    /// <summary>
+    /// Hàm tạo tile bằng cách đặt tuyến tính
+    /// </summary>
+    /// <param name="tiles"></param>
+    /// <param name="idPool"></param>
     private void AssignTilesForward(List<TileData> tiles, List<int> idPool)
     {
         ShuffleList(tiles);
@@ -166,6 +184,12 @@ public class LevelManager : MonoBehaviour
                 tiles[mark++].TileID = idPool[i % idPool.Count];
     }
 
+    /// <summary>
+    /// Random pool ID có thể xuất hiện
+    /// </summary>
+    /// <param name="totalTiles"></param>
+    /// <param name="availableIDs"></param>
+    /// <returns></returns>
     private List<int> BuildIDPool(int totalTiles, List<int> availableIDs)
     {
         List<int> pool = new List<int>();
@@ -259,6 +283,13 @@ public class LevelManager : MonoBehaviour
     //     }
     //     return true;
     // }
+    
+    /// <summary>
+    /// Hàm sinh ngược tiles
+    /// </summary>
+    /// <param name="tiles"></param>
+    /// <param name="listIDs"></param>
+    /// <returns></returns>
     private bool AssignTilesBackward(List<TileData> tiles, List<int> listIDs)
     {
         List<TileData> remainingTiles = new List<TileData>(tiles);
@@ -338,6 +369,26 @@ public class LevelManager : MonoBehaviour
             int rnd = Random.Range(0, i + 1);
             (list[i], list[rnd]) = (list[rnd], list[i]);
         }
+    }
+
+    private void LoadBackground()
+    {
+        int bgId = CurrentLevelID / 3;
+        _currentBackground.sprite = _backgrounds[bgId];
+
+        _currentBackground.transform.localScale = Vector3.one;
+        float spriteWidth = _currentBackground.sprite.bounds.size.x;
+        float spriteHeight = _currentBackground.sprite.bounds.size.y;
+
+        Camera mainCamera = Camera.main;
+        float worldScreenHeight = mainCamera.orthographicSize * 2.0f;
+        float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
+
+        float scaleX = worldScreenWidth / spriteWidth;
+        float scaleY = worldScreenHeight / spriteHeight;
+
+        float fitValue = Mathf.Max(scaleX, scaleY);
+        _currentBackground.transform.localScale = new Vector3(fitValue, fitValue, 1f);
     }
 }
 
