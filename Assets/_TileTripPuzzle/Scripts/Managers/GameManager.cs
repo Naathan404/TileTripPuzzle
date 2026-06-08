@@ -17,8 +17,14 @@ public class GameManager : MonoBehaviour
     public static event Action OnLevelWin;
     public static event Action OnLevelLose;
 
+    [Header("Player Stats")]
+    public SaveData Data;
+    public int HintUseCount = 10;
+    [SerializeField] private int _totalLevels = 10;
+
     [Header("References")]
     [SerializeField] private LevelManager _levelManager;
+    [SerializeField] private Board _board;
 
     #region Object Life cycle
     public static GameManager Instance;
@@ -33,6 +39,13 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
     }
+
+    private void Start()
+    {
+        Data = SaveSystem.Load();    
+        HintUseCount = Data.HintUseCount;
+    }
+
     private void OnEnable()
     {
         BarManager.OnBarFull += HandleLoseLevel;
@@ -74,6 +87,7 @@ public class GameManager : MonoBehaviour
         AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Fail);
         Debug.Log("[GAME MANAGER] Lose level");
         CurrentGameState = GameState.Lose;
+        HintUseCount = Data.HintUseCount;
         OnLevelLose?.Invoke();
     }
 
@@ -85,6 +99,16 @@ public class GameManager : MonoBehaviour
         Debug.Log("[GAME MANAGER] Next level");
         CurrentGameState = GameState.Playing;
         Reset();
+
+        int nextLevelId = Data.CurrentLevel + 1;
+        if(nextLevelId > _totalLevels)
+        {
+            Debug.Log("[LEVEL MANAGER] Đã hoàn thành tất cả màn chơi");
+            return;
+        }
+        Data.CurrentLevel = nextLevelId;
+        Data.HintUseCount = HintUseCount;
+        SaveSystem.Save(Data);
         AudioManager.Instance.UnPauseMusic();
         _levelManager.LoadNextLevel();
     }
@@ -95,10 +119,24 @@ public class GameManager : MonoBehaviour
         CurrentGameState = GameState.Playing;
         Reset();
         AudioManager.Instance.PlayMusic(AudioManager.Instance.BGM_1, true);
+        HintUseCount = Data.HintUseCount;
         _levelManager.ReplayLevel();
 
     }
 
+    public void HandleUseHint()
+    {
+        if(HintUseCount <= 0)
+        {
+            DebugManager.Instance.LogWarning("[GAME MANAGER] Số lượt dùng hint đã hết");
+            return;
+        }
+
+        _board.UseHintPowerUp();
+        HintUseCount--;
+    }
+
+    #region Helpers
     /// <summary>
     /// Set trạng thái level lại từ đầu
     /// </summary>
@@ -111,4 +149,5 @@ public class GameManager : MonoBehaviour
     {
         CurrentGameState = newState;
     }
+    #endregion
 }

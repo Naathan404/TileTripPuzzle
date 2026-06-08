@@ -29,6 +29,8 @@ public class BarManager : MonoBehaviour
     public static event Action OnTileRemoved;
     public static event Action<Tile> OnTileMove;
 
+    public List<Tile> CurrentTilesOnBar => _tileList;
+
     public static BarManager Instance;
 
     private void Awake()
