@@ -1,25 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class LevelManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Board _board;
 
-    [Header("Settings")]
-    [SerializeField] private int _totalLevels = 10;
-
     [Header("Backgrounds")]
+    [SerializeField] private int _backgroundChangePeriod = 5;
     [SerializeField] private SpriteRenderer _currentBackground;
     [SerializeField] private List<Sprite> _backgrounds = new List<Sprite>();
 
-    private SaveData _saveData;
+    // private SaveData _saveData;
     private LevelData _levelData;
-    public int CurrentLevelID => _saveData.CurrentLevel;
+    public int CurrentLevelID => GameManager.Instance.Data.CurrentLevel;
 
     private List<int> _availableTileIDs = new List<int>();
     List<int> _dummyIdList = new List<int>();
@@ -34,7 +30,7 @@ public class LevelManager : MonoBehaviour
             DebugManager.Instance.LogError("[LEVEL MANAGER] Background List is empty");
             return;
         }
-        _saveData = SaveSystem.Load();
+       // _saveData = SaveSystem.Load();
         LoadCurrentLevel();
     }
 
@@ -43,7 +39,7 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     public void LoadCurrentLevel()
     {
-        LoadLevel(_saveData.CurrentLevel);
+        LoadLevel(GameManager.Instance.Data.CurrentLevel);
     }
 
     /// <summary>
@@ -51,17 +47,7 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     public void LoadNextLevel()
     {
-        int nextLevelId = _saveData.CurrentLevel + 1;
-        if(nextLevelId > _totalLevels)
-        {
-            Debug.Log("[LEVEL MANAGER] Đã hoàn thành tất cả màn chơi");
-            return;
-        }
-
-        _saveData.CurrentLevel = nextLevelId;
-        SaveSystem.Save(_saveData);
-
-        LoadLevel(nextLevelId);
+        LoadLevel(GameManager.Instance.Data.CurrentLevel);
     }
 
     /// <summary>
@@ -78,7 +64,7 @@ public class LevelManager : MonoBehaviour
     {
         yield return null;
         
-        LoadLevel(_saveData.CurrentLevel);
+        LoadLevel(GameManager.Instance.Data.CurrentLevel);
     }
 
     /// <summary>
@@ -373,7 +359,7 @@ public class LevelManager : MonoBehaviour
 
     private void LoadBackground()
     {
-        int bgId = CurrentLevelID / 3;
+        int bgId = (CurrentLevelID / 5) % _backgrounds.Count;
         _currentBackground.sprite = _backgrounds[bgId];
 
         _currentBackground.transform.localScale = Vector3.one;

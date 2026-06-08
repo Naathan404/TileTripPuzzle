@@ -19,6 +19,7 @@ public class Tile : MonoBehaviour, IPointerClickHandler
 
 
     private SpriteRenderer _spriteRenderer;
+    private Vector3 _originalScale;
     private Color _disableColor = new Color(0.5f, 0.5f, 0.5f);
 
     public static event System.Action<Tile> OnTileClicked;
@@ -27,6 +28,7 @@ public class Tile : MonoBehaviour, IPointerClickHandler
     {
         _collider = GetComponent<BoxCollider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _originalScale = transform.localScale;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -89,6 +91,12 @@ public class Tile : MonoBehaviour, IPointerClickHandler
         Data.IsBlocked = wasBlocked;
     }
 
+    public void RefreshVisual()
+    {
+        if (Data.TileID < 0 || Data.TileID >= _imageList.Length) return;
+        _imageSprite.sprite = _imageList[Data.TileID];
+    }
+
     public void PlayDisappearAnimation()
     {
         _collider.enabled = false;
@@ -100,6 +108,7 @@ public class Tile : MonoBehaviour, IPointerClickHandler
         Sequence seq = DOTween.Sequence();
         seq.Append(transform.DOScale(1.3f, 0.1f).SetEase(Ease.OutBack));
         seq.Append(transform.DOScale(0f, _disappearDuration).SetEase(Ease.InBack));
+        seq.Join(_imageSprite.DOColor(new Color(500, 500, 500), _disappearDuration * 2f));
         seq.Join(transform.DORotate(new Vector3(0f, 0f, Random.Range(-45f, 45f)), _disappearDuration));
         seq.Join(_spriteRenderer.DOFade(0f, _disappearDuration));
         seq.Join(_imageSprite.DOFade(0f, _disappearDuration));
@@ -108,5 +117,26 @@ public class Tile : MonoBehaviour, IPointerClickHandler
             Destroy(gameObject);
             EffectManager.Instance.ReleaseTileEffect(eff);
         });
+    }
+
+    public void HighlightTile()
+    {
+        transform.DOKill();
+        _spriteRenderer.DOKill();
+        _imageSprite.DOKill();
+
+        transform.localScale = _originalScale;
+        _spriteRenderer.color = Color.white;
+        _imageSprite.color = Color.white;
+
+        transform.DOPunchScale(_originalScale * 0.2f, 0.8f, vibrato: 3, elasticity: 0.5f);
+
+        _imageSprite.DOColor(Color.yellow, 0.2f).SetLoops(4, LoopType.Yoyo);
+        _spriteRenderer.DOColor(Color.yellow, 0.2f)
+            .SetLoops(4, LoopType.Yoyo)
+            .OnComplete(() => {
+                _spriteRenderer.color = Color.white;
+                _imageSprite.color = Color.white;
+            });
     }
 }

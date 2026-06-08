@@ -1,3 +1,4 @@
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,8 +18,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Slider _musicSlider;
     [SerializeField] private Slider _sfxSlider;
 
+    [Header("UI Buttons")]
+    [SerializeField] private Button _hintUseButton;
+
     [Header("UI Texts")]
     [SerializeField] private TextMeshProUGUI _levelNumberText;
+    [SerializeField] private TextMeshProUGUI _hintCountText;
 
     private void Awake()
     {
@@ -52,15 +57,17 @@ public class UIManager : MonoBehaviour
         _pausePanel.SetActive(false);
         _settingPanel.SetActive(false);
 
-        UpdateSlider();
+        UpdateUI();
     }
 
-    private void UpdateSlider()
+    private void UpdateUI()
     {
         float musicVolume = PlayerPrefs.GetFloat("BGMVolume", 1f);
         float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
         if (_musicSlider != null) _musicSlider.value = musicVolume;
         if (_sfxSlider != null) _sfxSlider.value = sfxVolume;
+
+        _hintCountText.text = GameManager.Instance.HintUseCount.ToString();
     }
 
     private void ShowWinPanel()
@@ -82,6 +89,7 @@ public class UIManager : MonoBehaviour
         _settingPanel.SetActive(false);
     }
 
+    #region Button Events
     public void OnPauseButtonClicked()
     {
         if(GameManager.Instance.CurrentGameState != GameState.Playing) return;
@@ -150,7 +158,32 @@ public class UIManager : MonoBehaviour
         _settingPanel.SetActive(false);
     }
 
+    public void OnHintUseButtonClicked()
+    {
+        if (GameManager.Instance.Data.HintUseCount <= 0)
+        {
+            DebugManager.Instance.LogWarning("[UI MANAGER] Số lượt dùng hint đã hết -> dùng thất bại");
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Blocked); 
 
+            _hintUseButton.transform.DOKill();
+            _hintUseButton.transform.localScale = Vector3.one; 
+            _hintUseButton.transform.DOPunchPosition(new Vector3(15f, 0f, 0f), 0.5f, vibrato: 10);
+            return;
+        }
+        GameManager.Instance.HandleUseHint();
+        _hintUseButton.transform.DOKill();
+        _hintUseButton.transform.localScale = Vector3.one;
+        _hintUseButton.transform.DOPunchScale(new Vector3(-0.15f, -0.15f, 0f), 0.3f, vibrato: 5)
+                                .OnComplete(() => {
+                                    _hintCountText.text = GameManager.Instance.HintUseCount.ToString();
+                                });
+
+        _hintCountText.text = GameManager.Instance.HintUseCount.ToString();
+
+    }
+    #endregion
+
+    #region Sliders
     public void OnMusicSliderChanged(float value)
     {
         DebugManager.Instance.Log("[UI MANAGER] Thay đổi âm lượng cho BGM");
@@ -164,6 +197,8 @@ public class UIManager : MonoBehaviour
         
         AudioManager.Instance.SetVolume();
     }
+
+    #endregion
 
     public void UpdateLevelUI(int levelNumber)
     {

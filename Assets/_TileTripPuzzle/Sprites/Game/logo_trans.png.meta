@@ -1,31 +1,40 @@
 fileFormatVersion: 2
-guid: f05c151d11014a4409f9896fb8626838
+guid: bfd77c85f41f19744b4b9ca2b5dee186
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -203284209613505176
-    second: hintIcon_0
+      213: -913508411095442209
+    second: logo_trans_0
   - first:
-      213: -1605345263381965964
-    second: hintIcon_1
+      213: 1560566659232538158
+    second: logo_trans_1
   - first:
-      213: 5456119118481075891
-    second: hintIcon_2
+      213: -589095778840196713
+    second: logo_trans_2
   - first:
-      213: -8083207465513153340
-    second: hintIcon_3
+      213: -5766582538229240747
+    second: logo_trans_3
   - first:
-      213: 4921838190208951039
-    second: hintIcon_4
+      213: -6378898281562870510
+    second: logo_trans_4
   - first:
-      213: 2662973892465373027
-    second: hintIcon_5
+      213: -3876562457473045026
+    second: logo_trans_5
   - first:
-      213: -3925396508813917483
-    second: hintIcon_6
+      213: 3617166991447563567
+    second: logo_trans_6
   - first:
-      213: -7306177556448161200
-    second: hintIcon_7
+      213: -1779191552722772801
+    second: logo_trans_7
+  - first:
+      213: -6125629298510294647
+    second: logo_trans_8
+  - first:
+      213: -5855169629162861456
+    second: logo_trans_9
+  - first:
+      213: 7227289701355205052
+    second: logo_trans_10
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -117,17 +126,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: hintIcon_2
+      name: logo_trans_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 256
-        height: 256
+        width: 1080
+        height: 1080
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -136,8 +158,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3be28453e6708bb40800000000000000
-      internalID: 5456119118481075891
+      spriteID: fdc1359a0f09253f0800000000000000
+      internalID: -913508411095442209
       vertices: []
       indices: 
       edges: []
@@ -146,7 +168,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: c2d437d3fa1bcce4496671fe484cff8b
+    spriteID: e66f976426ef1034b812bf47cfe2a832
     internalID: 0
     vertices: []
     indices: 
@@ -156,14 +178,18 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      hintIcon_0: -203284209613505176
-      hintIcon_1: -1605345263381965964
-      hintIcon_2: 5456119118481075891
-      hintIcon_3: -8083207465513153340
-      hintIcon_4: 4921838190208951039
-      hintIcon_5: 2662973892465373027
-      hintIcon_6: -3925396508813917483
-      hintIcon_7: -7306177556448161200
+      logo_trans_0: -913508411095442209
+      logo_trans_1: 1560566659232538158
+      logo_trans_10: 7227289701355205052
+      logo_trans_11: -894032229
+      logo_trans_2: -589095778840196713
+      logo_trans_3: -5766582538229240747
+      logo_trans_4: -6378898281562870510
+      logo_trans_5: -3876562457473045026
+      logo_trans_6: 3617166991447563567
+      logo_trans_7: -1779191552722772801
+      logo_trans_8: -6125629298510294647
+      logo_trans_9: -5855169629162861456
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

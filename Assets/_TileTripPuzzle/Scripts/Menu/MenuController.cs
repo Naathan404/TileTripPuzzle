@@ -18,6 +18,7 @@ public class Menu : MonoBehaviour
 
     public void OnExitButtonClicked()
     {
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Button);
         Application.Quit();
 
         #if UNITY_EDITOR
@@ -27,12 +28,14 @@ public class Menu : MonoBehaviour
 
     public void OnSettingButtonClicked()
     {
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Button);
         _menuPanel.SetActive(false);
         _settingPanel.SetActive(true);
     }
 
     public void OnMenuPanelButtonClicked()
     {
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Button);
         _menuPanel.SetActive(true);
         _settingPanel.SetActive(false);
     }

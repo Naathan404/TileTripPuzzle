@@ -1,31 +1,10 @@
 fileFormatVersion: 2
-guid: f05c151d11014a4409f9896fb8626838
+guid: fcd4c0c21f019544c863b38d916d3359
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -203284209613505176
-    second: hintIcon_0
-  - first:
-      213: -1605345263381965964
-    second: hintIcon_1
-  - first:
-      213: 5456119118481075891
-    second: hintIcon_2
-  - first:
-      213: -8083207465513153340
-    second: hintIcon_3
-  - first:
-      213: 4921838190208951039
-    second: hintIcon_4
-  - first:
-      213: 2662973892465373027
-    second: hintIcon_5
-  - first:
-      213: -3925396508813917483
-    second: hintIcon_6
-  - first:
-      213: -7306177556448161200
-    second: hintIcon_7
+      213: -4320295261928297051
+    second: logo_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -117,27 +96,40 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: hintIcon_2
+      name: logo_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 256
-        height: 256
+        x: 27
+        y: 26
+        width: 1027
+        height: 1027
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3be28453e6708bb40800000000000000
-      internalID: 5456119118481075891
+      spriteID: 5ade5f3695a3b04c0800000000000000
+      internalID: -4320295261928297051
       vertices: []
       indices: 
       edges: []
@@ -146,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: c2d437d3fa1bcce4496671fe484cff8b
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -156,14 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      hintIcon_0: -203284209613505176
-      hintIcon_1: -1605345263381965964
-      hintIcon_2: 5456119118481075891
-      hintIcon_3: -8083207465513153340
-      hintIcon_4: 4921838190208951039
-      hintIcon_5: 2662973892465373027
-      hintIcon_6: -3925396508813917483
-      hintIcon_7: -7306177556448161200
+      logo_0: -4320295261928297051
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

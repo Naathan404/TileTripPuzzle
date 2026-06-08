@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
@@ -138,30 +139,104 @@ public class Board : MonoBehaviour
         }
         //return false;
     }
-    
+
+    /// <summary>
+    /// Trôn board
+    /// </summary>
     private void ShuffleBoard()
     {
-        // Lưu lại tất cả vị trí (Vector3) hiện tại của các ô
-        List<Vector3> allPositions = new List<Vector3>();
-        foreach (Tile tile in _tileList)
-        {
-            allPositions.Add(tile.transform.position);
-        }
-
-        for (int i = 0; i < allPositions.Count; i++)
-        {
-            Vector3 temp = allPositions[i];
-            int randomIndex = UnityEngine.Random.Range(i, allPositions.Count);
-            allPositions[i] = allPositions[randomIndex];
-            allPositions[randomIndex] = temp;
-        }
+        List<int> allIDs = _tileList.Select(t => t.Data.TileID).ToList();
+        LevelManager.ShuffleList(allIDs);
 
         for (int i = 0; i < _tileList.Count; i++)
         {
-            _tileList[i].transform.DOMove(allPositions[i], 0.3f);
+            _tileList[i].Data.TileID = allIDs[i];
+            _tileList[i].RefreshVisual(); 
         }
     }
+
     #endregion
 
+    # region HINTS
+    public void UseHintPowerUp()
+    {
+        List<Tile> matchingGroup = FindMatchingGroup();
+        if (matchingGroup != null)
+        {
+            foreach (Tile tile in matchingGroup)
+                tile.HighlightTile();
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Match);
+            return;
+        }
 
+        int attempt = 0;
+        while (matchingGroup == null && attempt < 5)
+        {
+            ShuffleBoard();
+            matchingGroup = FindMatchingGroup();
+            attempt++;
+        }
+
+        if (matchingGroup == null)
+        {
+            Debug.Log("[BOARD] Không thể tìm được bộ 3 hợp lệ sau khi shuffle!");
+            return;
+        }
+
+        foreach (Tile tile in matchingGroup)
+            tile.HighlightTile();
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.SFX_Match);
+    }
+
+    /// <summary>
+    /// Hàm tìm 3 ô giống nhau
+    /// </summary>
+    /// <returns></returns>
+    private List<Tile> FindMatchingGroup()
+    {
+        List<Tile> tilesOnBar = BarManager.Instance.CurrentTilesOnBar; 
+        Dictionary<int, int> barCount = new Dictionary<int, int>();
+        foreach (Tile tile in tilesOnBar)
+        {
+            int id = tile.TileID;
+            if (!barCount.ContainsKey(id)) barCount[id] = 0;
+            barCount[id]++;
+        }
+
+        Dictionary<int, List<Tile>> boardGroups = new Dictionary<int, List<Tile>>();
+        foreach (Tile tile in _tileList)
+        {
+            if (tile.Data.IsBlocked) continue; 
+
+            int id = tile.TileID;
+            if (!boardGroups.ContainsKey(id))
+            {
+                boardGroups[id] = new List<Tile>();
+            }
+            boardGroups[id].Add(tile);
+        }
+
+        foreach (var pair in boardGroups)
+        {
+            int id = pair.Key;
+            List<Tile> tilesOnBoard = pair.Value;
+
+            int countOnBar = barCount.ContainsKey(id) ? barCount[id] : 0;
+            int countOnBoard = tilesOnBoard.Count;
+
+            if (countOnBar + countOnBoard >= 3)
+            {
+                int needFromBoard = 3 - countOnBar;
+                List<Tile> hintResult = new List<Tile>();
+                for (int i = 0; i < needFromBoard; i++)
+                {
+                    hintResult.Add(tilesOnBoard[i]);
+                }
+                return hintResult;
+            }
+        }
+
+        return null;
+    }
+    #endregion
 }
