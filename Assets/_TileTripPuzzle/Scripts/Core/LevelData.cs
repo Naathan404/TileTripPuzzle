@@ -9,6 +9,7 @@ public class LevelData
     public float SpacingX = 0.5f;
     public float SpacingY = 0.5f;
     public int AvailableTileNumber;
+    public bool[] HideTiles = new bool[7];
     
     public List<LayerData> Layers = new List<LayerData>();
 }

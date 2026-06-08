@@ -44,5 +44,8 @@ TagManager:
   - name: Base
     uniqueID: 728517505
     locked: 0
+  - name: Overbase
+    uniqueID: 2647397603
+    locked: 0
   m_RenderingLayers:
   - Default

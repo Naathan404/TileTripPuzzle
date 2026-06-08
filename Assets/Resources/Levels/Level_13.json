@@ -5,6 +5,15 @@
     "SpacingX": 0.75,
     "SpacingY": 0.800000011920929,
     "AvailableTileNumber": 8,
+    "HideTiles": [
+        false,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false
+    ],
     "Layers": [
         {
             "ZIndex": 0,

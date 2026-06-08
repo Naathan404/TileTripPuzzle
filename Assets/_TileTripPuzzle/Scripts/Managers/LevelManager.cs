@@ -104,6 +104,9 @@ public class LevelManager : MonoBehaviour
             _dummyIdList.RemoveAt(rnd);
         }
 
+        // Load lại cái barr
+        BarManager.Instance.UpdateHideTiles(_levelData.HideTiles);
+        // load lại cái ui của màn chơi
         UIManager.Instance.UpdateLevelUI(CurrentLevelID);
         List<TileData> tileDatas = ConvertDataToGrid(_levelData);
         _board.InitBoard(tileDatas, _levelData.SpacingX, _levelData.SpacingY);
