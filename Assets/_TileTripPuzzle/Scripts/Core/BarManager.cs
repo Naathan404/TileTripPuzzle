@@ -6,6 +6,7 @@ using System.Collections;
 using System;
 using UnityEngine.XR;
 using UnityEngine.Rendering;
+using System.Linq;
 
 public class BarManager : MonoBehaviour
 {
@@ -14,6 +15,11 @@ public class BarManager : MonoBehaviour
     [SerializeField] private float _tileSpacing = 0.5f;
     [SerializeField] private List<Tile> _tileList = new List<Tile>();
     [SerializeField] private List<Transform> _slots = new List<Transform>();
+
+    [Header("Cloud")]
+    [SerializeField] private GameObject _hideTilePrefab;
+    [SerializeField] private float _hideTileOffset;
+    private GameObject[] _hideTiles = new GameObject[7];
 
 
     [Header("Animation Settings")]
@@ -66,7 +72,19 @@ public class BarManager : MonoBehaviour
 
         for (int i = 0; i < _maxBarCapacity; i++)
         {
-            _slots[i].transform.position = new Vector3(startX + i * _tileSpacing, this.transform.position.y, 10);
+            Vector3 pos = new Vector3(startX + i * _tileSpacing, this.transform.position.y, 10);
+            _slots[i].transform.position = pos;
+
+            GameObject hide = Instantiate(_hideTilePrefab, pos + new Vector3(0, 0.05f), Quaternion.identity);
+            _hideTiles[i] = hide;
+        }
+    }
+
+    public void UpdateHideTiles(bool[] hideTiles)
+    {
+        for(int i = 0; i < _hideTiles.Length; i++)
+        {
+            _hideTiles[i].SetActive(hideTiles[i]);
         }
     }
 

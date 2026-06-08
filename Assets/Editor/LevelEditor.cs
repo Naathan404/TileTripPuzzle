@@ -3,6 +3,7 @@ using UnityEditor; // Bắt buộc phải có thư viện này
 using System.Collections.Generic;
 using System.IO;
 using log4net.Core;
+using NUnit.Framework.Constraints;
 
 public class LevelEditor : EditorWindow
 {
@@ -12,6 +13,7 @@ public class LevelEditor : EditorWindow
     private int currentLayerZ = 0; 
     private int levelID = 1;
     private int availableTileNumber = 4;
+    private bool[] hideTiles = new bool[7];
     private Vector2 tileSpacing = new Vector2(0.75f, 0.8f);
 
     private float cellSize = 20f; 
@@ -36,7 +38,7 @@ public class LevelEditor : EditorWindow
     /// <summary>
     /// Vẽ header
     /// </summary>
-private void DrawHeader()
+    private void DrawHeader()
     {
         GUILayout.Label("THIẾT KẾ BẢN ĐỒ TILE MATCH", EditorStyles.boldLabel);
         GUILayout.Space(10);
@@ -52,6 +54,19 @@ private void DrawHeader()
         GUILayout.Label("Cấu Hình Khoảng Cách", EditorStyles.boldLabel);
         tileSpacing = EditorGUILayout.Vector2Field("Khoảng cách thẻ (Spacing)", tileSpacing);
         GUILayout.EndVertical();
+
+        GUILayout.Label("Hide Tiles:", EditorStyles.boldLabel);
+
+        // Bắt đầu một hàng ngang
+        GUILayout.BeginHorizontal();
+
+        for (int i = 0; i < hideTiles.Length; i++)
+        {
+            hideTiles[i] = GUILayout.Toggle(hideTiles[i], $" [{i}]", GUILayout.Width(50));
+        }
+
+        // Kết thúc hàng ngang
+        GUILayout.EndHorizontal();
 
         // Box Danh Sách Tile ID (Mới thêm)
         GUILayout.BeginVertical("box");
@@ -169,6 +184,7 @@ private void DrawHeader()
         newLevel.SpacingX = tileSpacing.x;
         newLevel.SpacingY = tileSpacing.y;
         newLevel.AvailableTileNumber = availableTileNumber;
+        newLevel.HideTiles = hideTiles;
         int totalTilesCount = 0;
 
         foreach (var kvp in layerDataDict)
