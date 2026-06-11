@@ -2,8 +2,6 @@ using UnityEngine;
 using UnityEditor; // Bắt buộc phải có thư viện này
 using System.Collections.Generic;
 using System.IO;
-using log4net.Core;
-using NUnit.Framework.Constraints;
 
 public class LevelEditor : EditorWindow
 {
